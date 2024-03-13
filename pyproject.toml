@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spacelift"
-version = "1.1.0"
+version = "1.1.1"
 description = "simple python client for the spacelift.io GraphQL API"
 authors = ["Will George <wrgeorge1983@gmail.com>"]
 readme = "README.md"

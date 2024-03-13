@@ -288,9 +288,10 @@ class Spacelift:
             }
         }
         query = gql(query_text)
-        return self._execute(query, variable_values=variable_values)[
+        nodes = self._execute(query, variable_values=variable_values)[
             "searchBlueprints"
         ]["edges"]
+        return [node["node"] for node in nodes]
 
     def get_blueprint_by_id(
         self, blueprint_id: str, query_fields: Optional[list[str]] = None
