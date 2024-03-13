@@ -78,4 +78,12 @@ necessary for more advanced queries.
 
 ### Mocked Version
 There's also a mocked version `MockedSpacelift` that can be used for testing.  It offers mocked versions of all the 
-CRUD methods without any real API calls. 
+CRUD methods without any real API calls.
+
+## Development
+
+### Publishing
+```bash
+poetry build
+poetry publish
+```
