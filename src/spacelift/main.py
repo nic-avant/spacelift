@@ -266,8 +266,74 @@ class Spacelift:
         log.debug(f"trigger_run result: {result}")
         return result
 
+    def get_blueprints(self, query_fields: Optional[list[str]] = None) -> list[dict]:
+        if query_fields is None:
+            query_fields = ["id", "name"]
+        newline = "\n"
+        query_text = f"""
+        query SearchBlueprints($input: SearchInput!) {{
+         searchBlueprints(input: $input) {{ 
+          edges {{
+           node {{ 
+            {newline.join(query_fields)}
+           }}
+          }} 
+         }} 
+        }}
+        """
+        variable_values = {
+            "input": {
+                "fullTextSearch": "",
+                "predicates": [],
+            }
+        }
+        query = gql(query_text)
+        return self._execute(query, variable_values=variable_values)[
+            "searchBlueprints"
+        ]["edges"]
 
-def main():
+    def get_blueprint_by_id(
+        self, blueprint_id: str, query_fields: Optional[list[str]] = None
+    ) -> dict:
+        if query_fields is None:
+            query_fields = ["id", "name"]
+        newline = "\n"
+        query_text = f"""
+        query blueprint($id: ID!) {{
+         blueprint(id: $id) {{ 
+          {newline.join(query_fields)}
+         }} 
+        }}
+        """
+        variable_values = {
+            "id": blueprint_id,
+        }
+        query = gql(query_text)
+        return self._execute(query, variable_values=variable_values)["blueprint"]
+
+    def create_stack_from_blueprint(
+        self, blueprint_id: str, inputs: list[dict]
+    ) -> dict:
+        query_text = f"""
+        mutation BlueprintCreateStack($id: ID!, $input: BlueprintStackCreateInput!) {{
+            blueprintCreateStack(id: $id, input: $input) {{
+                stackID
+                runID
+            }}
+        }}
+        """
+        variable_values = {
+            "id": blueprint_id,
+            "input": {"templateInputs": inputs},
+        }
+        query = gql(query_text)
+        raw_result = self._execute(query, variable_values=variable_values)
+        result = raw_result["blueprintCreateStack"]
+        log.debug(f"create_stack_from_blueprint result: {result}")
+        return result
+
+
+def space_context_test():
     sl = Spacelift(os.environ.get("SPACELIFT_BASE_URL"))
     # result = sl.get_stacks()
     # print(result)
@@ -338,6 +404,40 @@ def main():
         )
 
         print(f"create_space result: {result}")
+
+
+def blueprint_test():
+    sl = Spacelift(os.environ.get("SPACELIFT_BASE_URL"))
+    # result = sl.get_blueprints(query_fields=["id", "name"])
+    bp_id = "fcr-aw4-1-az2-1"
+    result = sl.get_blueprint_by_id(
+        blueprint_id=bp_id, query_fields=["id", "name", "inputs { id name type }"]
+    )
+    print(result)
+
+    inputs = [
+        {
+            "id": "environment",
+            "value": "dev",
+        },
+        {
+            "id": "customer_name",
+            "value": "abc",
+        },
+        {
+            "id": "description",
+            "value": "abc dev environment",
+        },
+        {"id": "context_id", "value": "svc_abcd-context"},
+        {"id": "space_id", "value": "svc_abcd-space-01HJP3651BQT2GY2EQSG6KVWDB"},
+    ]
+    result = sl.create_stack_from_blueprint(blueprint_id=bp_id, inputs=inputs)
+    print(result)
+
+
+def main():
+    # space_context_test()
+    blueprint_test()
 
 
 if __name__ == "__main__":

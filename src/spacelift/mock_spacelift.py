@@ -21,6 +21,17 @@ class MockSpacelift:
     def jwt(self):
         return self._jwt
 
+    def get_blueprints(self, query_fields: Optional[list[str]] = None) -> list[dict]:
+        raise NotImplementedError()
+
+    def get_blueprint_by_name(
+        self, blueprint_name: str, query_fields: Optional[list[str]] = None
+    ):
+        raise NotImplementedError()
+
+    def create_stack_from_blueprint(self, blueprint_id: str, inputs: list[dict]):
+        raise NotImplementedError()
+
     def get_stacks(self, query_fields: Optional[list[str]] = None) -> list[dict]:
         if query_fields is None:
             query_fields = ["id", "space"]

@@ -1,6 +1,11 @@
 # Spacelift Client
 Simple client library for working with the [spacelift.io](https://spacelift.io) API.
 
+## Essential features:
+- Read operations for Spaces, Contexts, Stacks, and Blueprints
+- Create operations for Spaces, Contexts, and Stacks (from Blueprints)
+- Trigger a run for a Stack
+
 ## Install
 ```bash
 pip install spacelift
@@ -43,6 +48,10 @@ sl.get_spaces()
 sl.get_space_by_id(space_id)
 sl.get_contexts()
 sl.get_context_by_id(context_id)
+sl.get_blueprints()
+sl.get_blueprint_by_id(blueprint_id)
+
+sl.create_stack_from_blueprint(blueprint_id, inputs=[{'id': 'bp_var1', 'value': 'bp_var1_value'}])
 
 sl.trigger_run(stack_id)
 ```
