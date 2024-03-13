@@ -247,6 +247,22 @@ class Spacelift:
         log.debug(f"delete_space result: {result}")
         return result
 
+    def delete_stack(self, stack_id: str):
+        query_text = f"""
+        mutation DeleteStack($id: ID!) {{
+            stackDelete(id: $id) {{
+                id
+            }}
+        }}
+        """
+        variable_values = {
+            "id": stack_id,
+        }
+        query = gql(query_text)
+        result = self._execute(query, variable_values=variable_values)
+        log.debug(f"delete_stack result: {result}")
+        return result
+
     def trigger_run(self, stack_id: str, query_fields: Optional[list[str]] = None):
         if query_fields is None:
             query_fields = ["id", "branch"]
