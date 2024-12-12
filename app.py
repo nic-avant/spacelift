@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from spacelift import Spacelift
 from dotenv import load_dotenv
+import gql
 
 # Load environment variables
 load_dotenv()
@@ -22,11 +23,48 @@ def get_spacelift_client():
         raise HTTPException(status_code=500, detail=str(e))
 
 # Pydantic models for request/response
+class StackCommit(BaseModel):
+    authorLogin: Optional[str] = None
+    authorName: Optional[str] = None
+    hash: Optional[str] = None
+    message: Optional[str] = None
+    timestamp: Optional[int] = None
+    url: Optional[str] = None
+
+class StackRun(BaseModel):
+    id: Optional[str] = None
+    branch: Optional[str] = None
+    commit: Optional[StackCommit] = None
+    createdAt: Optional[int] = None
+    state: Optional[str] = None
+    title: Optional[str] = None
+
 class Stack(BaseModel):
     id: str
     name: Optional[str] = None
+    administrative: Optional[bool] = None
+    branch: Optional[str] = None
+    description: Optional[str] = None
     labels: Optional[List[str]] = None
+    lockedAt: Optional[int] = None
+    lockedBy: Optional[str] = None
+    blocked: Optional[bool] = None
+    blocker: Optional[StackRun] = None
+    namespace: Optional[str] = None
+    projectRoot: Optional[str] = None
+    repository: Optional[str] = None
+    space: Optional[str] = None
     state: Optional[str] = None
+    workerPool: Optional[Dict[str, Any]] = None
+    createdAt: Optional[int] = None
+    isDisabled: Optional[bool] = None
+    isDrifted: Optional[bool] = None
+    runs: Optional[List[StackRun]] = None
+
+class WorkerPool(BaseModel):
+    id: str
+    name: Optional[str] = None
+    description: Optional[str] = None
 
 class Space(BaseModel):
     id: str
@@ -34,22 +72,41 @@ class Space(BaseModel):
     description: Optional[str] = None
     labels: Optional[List[str]] = None
     parentSpace: Optional[str] = None
+    inheritEntities: Optional[bool] = None
+    createdAt: Optional[str] = None
+    deletedAt: Optional[str] = None
+
+class ConfigItem(BaseModel):
+    id: str
+    value: Optional[str] = None
+    writeOnly: Optional[bool] = None
 
 class Context(BaseModel):
     id: str
     name: str
     description: Optional[str] = None
     labels: Optional[List[str]] = None
-    config: Optional[List[Dict[str, Any]]] = None
+    config: Optional[List[ConfigItem]] = None
+    space: Optional[str] = None
+    createdAt: Optional[str] = None
+    deletedAt: Optional[str] = None
+
+class BlueprintInput(BaseModel):
+    id: str
+    name: Optional[str] = None
+    type: Optional[str] = None
+    description: Optional[str] = None
+    defaultValue: Optional[str] = None
+    required: Optional[bool] = None
 
 class Blueprint(BaseModel):
     id: str
     name: str
-    inputs: Optional[List[Dict[str, Any]]] = None
-
-class StackRun(BaseModel):
-    stack_id: str
-    run_id: Optional[str] = None
+    description: Optional[str] = None
+    inputs: Optional[List[BlueprintInput]] = None
+    space: Optional[str] = None
+    createdAt: Optional[str] = None
+    deletedAt: Optional[str] = None
 
 class CreateSpaceRequest(BaseModel):
     name: str
@@ -80,7 +137,28 @@ async def list_stacks(label: Optional[str] = None, state: Optional[str] = None):
     """
     client = get_spacelift_client()
     try:
-        stacks = client.get_stacks(query_fields=["id", "name", "labels", "state"])
+        stacks = client.get_stacks(query_fields=[
+            "id",
+            "name",
+            "administrative",
+            "branch",
+            "description",
+            "labels",
+            "lockedAt",
+            "lockedBy",
+            "blocked",
+            "blocker { id branch commit { authorLogin authorName hash message timestamp url } createdAt state title }",
+            "namespace",
+            "projectRoot",
+            "repository",
+            "space",
+            "state",
+            "workerPool { id name description }",
+            "createdAt",
+            "isDisabled",
+            "isDrifted",
+            "runs { id branch commit { authorLogin authorName hash message timestamp url } state createdAt }"
+        ])
         
         # Filter by label if provided
         if label:
@@ -101,7 +179,28 @@ async def get_stack(stack_id: str):
     try:
         stack = client.get_stack_by_id(
             stack_id=stack_id,
-            query_fields=["id", "name", "labels", "state"]
+            query_fields=[
+                "id",
+                "name",
+                "administrative",
+                "branch",
+                "description",
+                "labels",
+                "lockedAt",
+                "lockedBy",
+                "blocked",
+                "blocker { id branch commit { authorLogin authorName hash message timestamp url } createdAt state title }",
+                "namespace",
+                "projectRoot",
+                "repository",
+                "space",
+                "state",
+                "workerPool { id name description }",
+                "createdAt",
+                "isDisabled",
+                "isDrifted",
+                "runs { id branch commit { authorLogin authorName hash message timestamp url } state createdAt }"
+            ]
         )
         if not stack:
             raise HTTPException(status_code=404, detail="Stack not found")
@@ -142,13 +241,57 @@ async def create_stack_from_blueprint(request: CreateStackFromBlueprintRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/stacks/raw", tags=["stacks"])
+async def list_stacks_raw():
+    """
+    List all stacks with all available fields for schema exploration.
+    This endpoint returns the raw GraphQL response without Pydantic filtering.
+    """
+    client = get_spacelift_client()
+    try:
+        # Request a wide range of fields to explore the schema
+        stacks = client.get_stacks(query_fields=[
+            "id",
+            "name",
+            "administrative",
+            "branch",
+            "description",
+            "labels",
+            "lockedAt",
+            "lockedBy",
+            "blocked",
+            "blocker { id branch commit { authorLogin authorName hash message timestamp url } createdAt state title }",
+            "namespace",
+            "projectRoot",
+            "repository",
+            "space",
+            "state",
+            "workerPool { id name description }",
+            "createdAt",
+            "isDisabled",
+            "isDrifted",
+            "runs { id branch commit { authorLogin authorName hash message timestamp url } state createdAt }"
+        ])
+        return {"stacks": stacks}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # Space endpoints
 @app.get("/spaces", response_model=List[Space], tags=["spaces"])
 async def list_spaces():
     """List all spaces"""
     client = get_spacelift_client()
     try:
-        return client.get_spaces(query_fields=["id", "name", "description", "labels", "parentSpace"])
+        return client.get_spaces(query_fields=[
+            "id",
+            "name",
+            "description",
+            "labels",
+            "parentSpace",
+            "inheritEntities",
+            "createdAt",
+            "deletedAt"
+        ])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -159,7 +302,16 @@ async def get_space(space_id: str):
     try:
         space = client.get_space_by_id(
             space_id=space_id,
-            query_fields=["id", "name", "description", "labels", "parentSpace"]
+            query_fields=[
+                "id",
+                "name",
+                "description",
+                "labels",
+                "parentSpace",
+                "inheritEntities",
+                "createdAt",
+                "deletedAt"
+            ]
         )
         if not space:
             raise HTTPException(status_code=404, detail="Space not found")
@@ -199,7 +351,16 @@ async def list_contexts():
     """List all contexts"""
     client = get_spacelift_client()
     try:
-        return client.get_contexts(query_fields=["id", "name", "description", "labels", "config { id value writeOnly }"])
+        return client.get_contexts(query_fields=[
+            "id",
+            "name",
+            "description",
+            "labels",
+            "config { id value writeOnly }",
+            "space",
+            "createdAt",
+            "deletedAt"
+        ])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -210,7 +371,16 @@ async def get_context(context_id: str):
     try:
         context = client.get_context_by_id(
             context_id=context_id,
-            query_fields=["id", "name", "description", "labels", "config { id value writeOnly }"]
+            query_fields=[
+                "id",
+                "name",
+                "description",
+                "labels",
+                "config { id value writeOnly }",
+                "space",
+                "createdAt",
+                "deletedAt"
+            ]
         )
         if not context:
             raise HTTPException(status_code=404, detail="Context not found")
@@ -250,7 +420,15 @@ async def list_blueprints():
     """List all blueprints"""
     client = get_spacelift_client()
     try:
-        return client.get_blueprints(query_fields=["id", "name", "inputs { id name type }"])
+        return client.get_blueprints(query_fields=[
+            "id",
+            "name",
+            "description",
+            "inputs { id name type description defaultValue required }",
+            "space",
+            "createdAt",
+            "deletedAt"
+        ])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -261,11 +439,82 @@ async def get_blueprint(blueprint_id: str):
     try:
         blueprint = client.get_blueprint_by_id(
             blueprint_id=blueprint_id,
-            query_fields=["id", "name", "inputs { id name type }"]
+            query_fields=[
+                "id",
+                "name",
+                "description",
+                "inputs { id name type description defaultValue required }",
+                "space",
+                "createdAt",
+                "deletedAt"
+            ]
         )
         if not blueprint:
             raise HTTPException(status_code=404, detail="Blueprint not found")
         return blueprint
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Schema endpoints
+@app.get("/schema", tags=["schema"])
+async def get_schema():
+    """
+    Get the full GraphQL schema through introspection.
+    This shows all available types, queries, and mutations.
+    """
+    client = get_spacelift_client()
+    try:
+        # GraphQL introspection query
+        query = """
+        query IntrospectionQuery {
+            __schema {
+                types {
+                    name
+                    description
+                    fields {
+                        name
+                        description
+                        type {
+                            name
+                            kind
+                            ofType {
+                                name
+                                kind
+                            }
+                        }
+                        args {
+                            name
+                            description
+                            type {
+                                name
+                                kind
+                                ofType {
+                                    name
+                                    kind
+                                }
+                            }
+                        }
+                    }
+                }
+                queryType {
+                    name
+                    fields {
+                        name
+                        description
+                    }
+                }
+                mutationType {
+                    name
+                    fields {
+                        name
+                        description
+                    }
+                }
+            }
+        }
+        """
+        result = client._execute(gql(query))
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
