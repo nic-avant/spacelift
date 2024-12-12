@@ -1,6 +1,6 @@
 import os
 from typing import List, Optional, Dict, Any
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from spacelift import Spacelift
 from dotenv import load_dotenv
@@ -128,12 +128,19 @@ class CreateStackFromBlueprintRequest(BaseModel):
 
 # Stack endpoints
 @app.get("/stacks", response_model=List[Stack], tags=["stacks"])
-async def list_stacks(label: Optional[str] = None, state: Optional[str] = None):
+async def list_stacks(
+    label: Optional[str] = None, 
+    state: Optional[str] = None,
+    skip: Optional[int] = Query(default=0, ge=0),
+    limit: Optional[int] = Query(default=10, ge=1, le=100)
+):
     """
     List all stacks with optional filtering by label and/or state.
     
     - **label**: Optional filter by stack label
     - **state**: Optional filter by stack state (e.g., FINISHED, UNCONFIRMED, STOPPED, FAILED)
+    - **skip**: Number of stacks to skip (pagination)
+    - **limit**: Maximum number of stacks to return (pagination, max 100)
     """
     client = get_spacelift_client()
     try:
@@ -167,8 +174,9 @@ async def list_stacks(label: Optional[str] = None, state: Optional[str] = None):
         # Filter by state if provided
         if state:
             stacks = [stack for stack in stacks if "state" in stack and stack["state"] == state.upper()]
-            
-        return stacks
+        
+        # Apply pagination
+        return stacks[skip:skip + limit]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
