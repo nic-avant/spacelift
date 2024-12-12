@@ -132,7 +132,8 @@ async def list_stacks(
     label: Optional[str] = None, 
     state: Optional[str] = None,
     skip: Optional[int] = Query(default=0, ge=0),
-    limit: Optional[int] = Query(default=10, ge=1, le=100)
+    limit: Optional[int] = Query(default=10, ge=1, le=100),
+    runs_limit: Optional[int] = Query(default=10, ge=1, le=50, description="Number of recent runs to return per stack")
 ):
     """
     List all stacks with optional filtering by label and/or state.
@@ -141,6 +142,7 @@ async def list_stacks(
     - **state**: Optional filter by stack state (e.g., FINISHED, UNCONFIRMED, STOPPED, FAILED)
     - **skip**: Number of stacks to skip (pagination)
     - **limit**: Maximum number of stacks to return (pagination, max 100)
+    - **runs_limit**: Number of recent runs to return per stack (max 50)
     """
     client = get_spacelift_client()
     try:
@@ -174,6 +176,13 @@ async def list_stacks(
         # Filter by state if provided
         if state:
             stacks = [stack for stack in stacks if "state" in stack and stack["state"] == state.upper()]
+        
+        # Limit runs for each stack and sort by createdAt
+        for stack in stacks:
+            if "runs" in stack and stack["runs"]:
+                # Sort runs by createdAt in descending order (most recent first)
+                sorted_runs = sorted(stack["runs"], key=lambda x: x.get("createdAt", 0), reverse=True)
+                stack["runs"] = sorted_runs[:runs_limit]
         
         # Apply pagination
         return stacks[skip:skip + limit]
