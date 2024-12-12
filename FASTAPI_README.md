@@ -57,14 +57,9 @@ The API will be available at `http://localhost:8000` with interactive documentat
 - `GET /stacks` - List all stacks
   - Query params:
     - `label` (optional): Filter stacks by label
-    - `state` (optional): Filter stacks by state (e.g., FINISHED, UNCONFIRMED, STOPPED)
-
-- `GET /stacks/state/{state}` - Get all stacks with a specific state
-  - Common states:
-    - `FINISHED`: Stack run completed successfully
-    - `UNCONFIRMED`: Stack is waiting for confirmation
-    - `STOPPED`: Stack run was stopped
-    - `FAILED`: Stack run failed
+    - `state` (optional): Filter stacks by state
+      - Common states: `FINISHED`, `UNCONFIRMED`, `STOPPED`, `FAILED`
+      - Example: `/stacks?state=finished&label=prod`
 
 - `GET /stacks/{stack_id}` - Get stack details
 

@@ -76,7 +76,7 @@ async def list_stacks(label: Optional[str] = None, state: Optional[str] = None):
     List all stacks with optional filtering by label and/or state.
     
     - **label**: Optional filter by stack label
-    - **state**: Optional filter by stack state (e.g., FINISHED, UNCONFIRMED, STOPPED)
+    - **state**: Optional filter by stack state (e.g., FINISHED, UNCONFIRMED, STOPPED, FAILED)
     """
     client = get_spacelift_client()
     try:
@@ -91,25 +91,6 @@ async def list_stacks(label: Optional[str] = None, state: Optional[str] = None):
             stacks = [stack for stack in stacks if "state" in stack and stack["state"] == state.upper()]
             
         return stacks
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/stacks/state/{state}", response_model=List[Stack], tags=["stacks"])
-async def get_stacks_by_state(state: str):
-    """
-    Get all stacks with a specific state.
-    
-    Common states include:
-    - FINISHED: Stack run completed successfully
-    - UNCONFIRMED: Stack is waiting for confirmation
-    - STOPPED: Stack run was stopped
-    - FAILED: Stack run failed
-    """
-    client = get_spacelift_client()
-    try:
-        stacks = client.get_stacks(query_fields=["id", "name", "labels", "state"])
-        filtered_stacks = [stack for stack in stacks if "state" in stack and stack["state"] == state.upper()]
-        return filtered_stacks
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
