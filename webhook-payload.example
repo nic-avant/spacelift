@@ -1,0 +1,33 @@
+{
+    "account": "spacelift-io",
+    "state": "FINISHED",
+    "stateVersion": 4,
+    "timestamp": 1596979684,
+    "run": {
+        "id": "01EF9PFPNFFM2MQXTJKHK1B869",
+        "branch": "main",
+        "commit": {
+            "authorLogin": "Lewis McCoy",
+            "authorName": "Lewis McCoy",
+            "hash": "0ee3a3b7266daf5a1d44a193a0f48ce995fa75eb",
+            "message": "Update demo.tf",
+            "timestamp": 1596705932,
+            "url": "https://github.com/spacelift-io/demo/commit/0ee3a3b7266daf5a1d44a193a0f48ce995fa75eb"
+        },
+        "createdAt": 1596979665,
+        "delta": {
+            "added": 0,
+            "changed": 0,
+            "deleted": 0,
+            "resources": 1
+        },
+        "triggeredBy": "Lewis McCoy@hatfield.io",
+        "type": "TRACKED"
+    },
+    "stack": {
+        "id": "glbdev-use2-eks-delhi",
+        "name": "glbdev-use2-eks-delhi",
+        "description": "",
+        "labels": ["eks", "infrastructure"]
+    }
+}

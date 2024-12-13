@@ -1,5 +1,6 @@
-import os
 from typing import List, Optional, Dict, Any
+import os
+import time
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from spacelift import Spacelift
@@ -10,6 +11,10 @@ import gql
 load_dotenv()
 
 app = FastAPI(title="Spacelift API", description="FastAPI wrapper for Spacelift operations")
+
+@app.get("/", tags=["root"])
+async def read_root():
+    return {"message": "Welcome to the Spacelift API!"}
 
 # Initialize Spacelift client
 def get_spacelift_client():
@@ -125,6 +130,112 @@ class CreateContextRequest(BaseModel):
 class CreateStackFromBlueprintRequest(BaseModel):
     blueprint_id: str
     inputs: List[Dict[str, Any]]
+
+class SpaceRunCommit(BaseModel):
+    authorLogin: Optional[str] = None
+    authorName: Optional[str] = None
+    hash: str
+    message: str
+    timestamp: int
+    url: str
+
+class RunDelta(BaseModel):
+    added: int
+    changed: int
+    deleted: int
+    resources: int
+
+class SpaceRun(BaseModel):
+    id: str
+    branch: str
+    commit: SpaceRunCommit
+    createdAt: int
+    delta: RunDelta
+    triggeredBy: str
+    type: str
+
+class WebhookStack(BaseModel):
+    id: str
+    name: str
+    description: str
+    labels: List[str]
+
+class SpaceWebhookPayload(BaseModel):
+    account: str
+    state: str
+    stateVersion: int
+    timestamp: int
+    run: SpaceRun
+    stack: WebhookStack
+
+class EventProcessor:
+    def __init__(self, client: Spacelift):
+        self.client = client
+
+    async def process_event(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Process an event based on the webhook payload.
+        For finished runs, find all stacks that depend on the source stack.
+        """
+        result = {
+            "source_stack": None,
+            "dependent_stacks": [],
+            "actions": []
+        }
+
+        try:
+            # Parse the payload
+            webhook_data = SpaceWebhookPayload(**payload)
+            
+            # Only process FINISHED runs
+            if webhook_data.state != "FINISHED":
+                result["message"] = f"Ignoring run in state: {webhook_data.state}"
+                return result
+
+            source_stack_id = webhook_data.stack.id
+            result["source_stack"] = source_stack_id
+
+            # Find all stacks with the dependsOn label
+            # depends_on_label = f"dependsOn:{source_stack_id}"
+            # NOTE: not using dependsOn prefix until we actually add it in spacelift
+            depends_on_label = f"{source_stack_id}"
+            stacks = self.client.get_stacks(query_fields=[
+                "id",
+                "name",
+                "labels",
+                "state"
+            ])
+
+            # Filter stacks that have the dependsOn label
+            dependent_stacks = [
+                stack for stack in stacks 
+                if "labels" in stack and depends_on_label in stack.get("labels", [])
+            ]
+
+            result["dependent_stacks"] = [
+                {
+                    "id": stack["id"],
+                    "name": stack.get("name"),
+                    "state": stack.get("state"),
+                    "labels": stack.get("labels", [])
+                }
+                for stack in dependent_stacks
+            ]
+
+            result["actions"] = [
+                {
+                    "action": "trigger_stack",
+                    "stack_id": stack["id"],
+                    "reason": f"Dependency on stack {source_stack_id} which completed successfully"
+                }
+                for stack in dependent_stacks
+            ]
+
+            return result
+
+        except Exception as e:
+            result["error"] = str(e)
+            return result
 
 # Stack endpoints
 @app.get("/stacks", response_model=List[Stack], tags=["stacks"])
@@ -469,6 +580,34 @@ async def get_blueprint(blueprint_id: str):
         if not blueprint:
             raise HTTPException(status_code=404, detail="Blueprint not found")
         return blueprint
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Webhook endpoint
+@app.post("/webhook", tags=["webhook"])
+async def handle_webhook(payload: Dict[str, Any]):
+    """
+    Handle incoming Spacelift webhook data. This endpoint will:
+    1. Validate the webhook payload
+    2. For finished runs, find all stacks that depend on the source stack
+    3. Return a list of stacks that should be triggered
+    
+    The actual stack triggers will be handled separately after analysis.
+    """
+    client = get_spacelift_client()
+    processor = EventProcessor(client)
+
+    try:
+        # Process the event
+        result = await processor.process_event(payload)
+        
+        return {
+            "status": "received",
+            "timestamp": int(time.time()),
+            "analysis": result,
+            "message": f"Found {len(result.get('dependent_stacks', []))} dependent stacks"
+        }
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
