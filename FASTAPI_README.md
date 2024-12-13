@@ -145,6 +145,145 @@ Errors are returned in the following format:
 }
 ```
 
+## Diagrams
+
+This service provides a webhook endpoint that listens for Spacelift stack run completions and triggers dependent stacks based on configured dependencies.
+
+## API Endpoints
+
+### Webhook Flow
+
+```ascii
+                                                                 
+ +-----------------+        POST /webhook         +------------------------+
+ |                 |  Run completion event        |                        |
+ | Spacelift Stack |-------------------------->  | FastAPI Webhook Service |
+ |    (Source)     |                             |                        |
+ +-----------------+                             +------------------------+
+                                                           |
+                                                           |
+                                              Analyze Stack Dependencies
+                                                           |
+                                                           v
+                                             +------------------------+
+                                             |    Query Spacelift     |
+                                             |   Find stacks with     |
+                                             | matching dependency    |
+                                             |        labels          |
+                                             +------------------------+
+                                                           |
+                                                           |
+                                              Filter & Process Results
+                                                           |
+                                                           v
+                                             +------------------------+
+                                             |   Trigger Runs on      |
+                                             |   Dependent Stacks     |
+                                             |                        |
+                                             +------------------------+
+                                                           |
+                                                           |
+                                                           v
+                                             +------------------------+
+ +-----------------+                         |    Return Summary      |
+ |    Dependent    |     Trigger Run         |    of Actions &       |
+ |     Stacks      | <---------------------- |  Triggered Stacks     |
+ |                 |                         |                        |
+ +-----------------+                         +------------------------+
+
+
+Example Flow:
+1. Source stack "stack-a" completes a run
+2. Webhook receives completion event
+3. Service queries Spacelift for stacks with label "stack-a"
+4. Found stacks "stack-b" and "stack-c" with matching label
+5. Service triggers runs on dependent stacks
+6. Returns summary of actions taken
+```
+
+### List Stacks Endpoint
+
+```ascii
+GET /stacks
++------------------+     +-----------------+     +--------------------+
+|                  |     |                 |     |                    |
+|  Client Request  |     | FastAPI Service |     |  Spacelift API    |
+|   GET /stacks    | --> |  Process Query  | --> |  Get Stack List   |
+|   ?label=prod    |     |   Parameters    |     |   with Details    |
+|   ?state=READY   |     |                 |     |                    |
++------------------+     +-----------------+     +--------------------+
+         |                       |                        |
+         |                       |        Response        |
+         |                       | <----------------------|
+         |                       |                        |
+         |              +----------------+                |
+         |              | Filter Results |                |
+         |              |  - By Label    |                |
+         |              |  - By State    |                |
+         |              +----------------+                |
+         |                       |                        |
+         |                Paginated Response              |
+         |<----------------------|                        |
+         |                       |                        |
+         v                       v                        v
+
+Parameters:
+- label: Filter stacks by label
+- state: Filter by stack state
+- skip: Pagination offset
+- limit: Items per page
+- runs_limit: Number of recent runs to include
+```
+
+### Get Stack by ID Endpoint
+
+```ascii
+GET /stacks/{stack_id}
++------------------+     +-----------------+     +--------------------+
+|                  |     |                 |     |                    |
+|  Client Request  |     | FastAPI Service |     |  Spacelift API    |
+| GET /stacks/{id} | --> |   Validate ID   | --> |  Get Stack by ID  |
+|                  |     |                 |     |   with Details    |
++------------------+     +-----------------+     +--------------------+
+         |                       |                        |
+         |                       |        Response        |
+         |                       | <----------------------|
+         |                       |                        |
+         |              +----------------+                |
+         |              | Process Stack  |                |
+         |              |    Details     |                |
+         |              +----------------+                |
+         |                       |                        |
+         |             Detailed Response                  |
+         |<----------------------|                        |
+         |                       |                        |
+         v                       v                        v
+
+Response includes:
+- Stack details
+- Recent runs
+- Worker pool info
+- Labels and state
+```
+
+## Usage
+
+1. Configure your Spacelift stack to send webhook notifications to this service
+2. Label dependent stacks with the source stack's ID
+3. When the source stack completes a run, dependent stacks will be automatically triggered
+
+### Testing Locally
+```bash
+# Start the FastAPI service
+uvicorn app:app --reload
+
+# Test the webhook
+python test_webhook.py
+
+# Query stacks
+curl http://127.0.0.1:8000/stacks?label=prod
+curl http://127.0.0.1:8000/stacks/my-stack-id
+
 ## Security
 
 The application uses environment variables for authentication with Spacelift. Make sure to:
