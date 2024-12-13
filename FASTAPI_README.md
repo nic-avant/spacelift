@@ -162,34 +162,50 @@ This service provides a webhook endpoint that listens for Spacelift stack run co
  +-----------------+                             +------------------------+
                                                            |
                                                            |
-                                              Analyze Stack Dependencies
+                                              Validate Webhook Payload
                                                            |
                                                            v
                                              +------------------------+
                                              |    Query Spacelift     |
                                              |   Find stacks with     |
-                                             | matching dependency    |
-                                             |        labels          |
-                                             +------------------------+
-                                                           |
-                                                           |
-                                              Filter & Process Results
-                                                           |
-                                                           v
-                                             +------------------------+
-                                             |   Trigger Runs on      |
-                                             |   Dependent Stacks     |
-                                             |                        |
+                                             |    matching label      |
                                              +------------------------+
                                                            |
                                                            |
                                                            v
                                              +------------------------+
- +-----------------+                         |    Return Summary      |
- |    Dependent    |     Trigger Run         |    of Actions &       |
- |     Stacks      | <---------------------- |  Triggered Stacks     |
- |                 |                         |                        |
- +-----------------+                         +------------------------+
+                                             |   Analyze Results      |
+                                             | - Filter by state      |
+                                             | - Identify dependencies|
+                                             +------------------------+
+                                                           |
+                                                           |
+                                                           v
+                                             +------------------------+
+                                             |   Determine Triggers   |
+                                             | [Future Enhancement]   |
+                                             | - Check stack states   |
+                                             | - Evaluate conditions  |
+                                             | - Filter relevant deps |
+                                             +------------------------+
+                                                           |
+                                                           |
+                                                           v
+                                             +------------------------+
+                                             |   Return Analysis      |
+                                             | - Source stack info    |
+                                             | - Dependent stacks     |
+                                             | - Suggested actions    |
+                                             +------------------------+
+                                                     |
+                                                     |
+                              +--------------------+-----------------+
+                              |                    |                |
+                              v                    v                v
+                    +----------------+   +----------------+  +----------------+
+                    | Trigger Stack A |   | Trigger Stack B|  |  Skip Stack C |
+                    | (Relevant)      |   | (Relevant)     |  | (Not Ready)   |
+                    +----------------+   +----------------+  +----------------+
 
 
 Example Flow:
@@ -197,8 +213,8 @@ Example Flow:
 2. Webhook receives completion event
 3. Service queries Spacelift for stacks with label "stack-a"
 4. Found stacks "stack-b" and "stack-c" with matching label
-5. Service triggers runs on dependent stacks
-6. Returns summary of actions taken
+5. Analyzes which dependencies should be triggered (future enhancement)
+6. Returns analysis and triggers relevant stacks
 ```
 
 ### List Stacks Endpoint
