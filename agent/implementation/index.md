@@ -1,65 +1,70 @@
-### User Story 1: Set Up FastAPI Webhook
-**As a** developer, **I want to** set up a FastAPI webhook **so that** I can receive notifications from Spacelift.
+## Project Overview
 
-#### Acceptance Criteria:
-- A FastAPI application is created.
-- An endpoint `/webhook` is defined to receive POST requests.
-- The endpoint processes the incoming payload and logs the data.
+This project involves setting up a system to manage Spacelift stack execution using FastAPI and Temporal. The implementation is divided into several phases, each introducing specific features and technologies.
 
-### User Story 2: Process Notification Payload
-**As a** developer, **I want to** process the notification payload **so that** I can extract relevant information for further processing.
+### [Phase 1: Set Up FastAPI Webhook](./phase1.md)
+**Features:**
+- FastAPI application creation
+- Endpoint `/webhook` to receive POST requests
+- Payload processing and logging
 
-#### Acceptance Criteria:
-- The payload received by the webhook is parsed.
-- Relevant information (e.g., stack ID, status) is extracted from the payload.
-- The processed data is logged for verification.
+**Technology:**
+- FastAPI
 
-### User Story 3: Set Up Temporal Server
-**As a** developer, **I want to** set up a Temporal server **so that** I can run workflows to manage stack execution logic.
+### [Phase 2: Process Notification Payload](./phase2.md)
+**Features:**
+- Payload parsing
+- Extraction of relevant information (e.g., stack ID, status)
+- Logging of processed data
 
-#### Acceptance Criteria:
-- A Temporal server is running locally using Docker.
-- The server is accessible and ready to accept workflow definitions.
+**Technology:**
+- FastAPI
 
-### User Story 4: Define Temporal Workflow
-**As a** developer, **I want to** define a Temporal workflow **so that** I can manage the execution logic for Spacelift stacks.
+### [Phase 3: Set Up Temporal Server](./phase3.md)
+**Features:**
+- Local Temporal server setup using Docker
+- Server accessibility and readiness for workflow definitions
 
-#### Acceptance Criteria:
-- A Temporal workflow is defined to handle stack execution.
-- The workflow can be triggered with a payload containing stack information.
-- The workflow logic is implemented to manage stack execution.
+**Technology:**
+- Temporal
+- Docker
 
-### User Story 5: Integrate FastAPI with Temporal
-**As a** developer, **I want to** integrate the FastAPI webhook with Temporal **so that** I can trigger workflows based on Spacelift notifications.
+### [Phase 4: Define Temporal Workflow](./phase4.md)
+**Features:**
+- Definition of a Temporal workflow for stack execution
+- Workflow triggering with stack information payload
+- Implementation of workflow logic
 
-#### Acceptance Criteria:
-- The FastAPI webhook sends the processed payload to the Temporal workflow.
-- The Temporal workflow is triggered successfully with the payload.
-- The integration is tested and verified.
+**Technology:**
+- Temporal
 
-### User Story 6: Configure Spacelift Labels
-**As a** developer, **I want to** configure labels in Spacelift **so that** I can trigger the FastAPI webhook based on stack changes.
+### [Phase 5: Integrate FastAPI with Temporal](./phase5.md)
+**Features:**
+- Integration of FastAPI webhook with Temporal workflow
+- Successful triggering of Temporal workflow with processed payload
+- Integration testing and verification
 
-#### Acceptance Criteria:
-- Labels are created in Spacelift to trigger the webhook.
-- The webhook URL is configured in the Spacelift label settings.
-- The labels are tested to ensure they trigger the webhook correctly.
+**Technology:**
+- FastAPI
+- Temporal
 
-### User Story 7: Test End-to-End Flow
-**As a** developer, **I want to** test the end-to-end flow **so that** I can ensure the entire system works as expected.
+### [Phase 6: Configure Spacelift Labels](./phase6.md)
+**Features:**
+- Creation of labels in Spacelift to trigger the webhook
+- Configuration of webhook URL in Spacelift label settings
+- Testing of labels to ensure correct triggering of the webhook
 
-#### Acceptance Criteria:
-- A test Spacelift stack change triggers the webhook.
-- The webhook processes the payload and triggers the Temporal workflow.
-- The Temporal workflow manages the stack execution successfully.
-- The entire flow is verified and documented.
+**Technology:**
+- Spacelift
 
-### User Story 8: Deploy FastAPI and Temporal
-**As a** developer, **I want to** deploy the FastAPI application and Temporal workflows **so that** they are available in a production environment.
+### [Phase 7: Test End-to-End Flow](./phase7.md)
+**Features:**
+- End-to-end testing with a test Spacelift stack change
+- Verification of webhook processing and Temporal workflow triggering
+- Successful management of stack execution by Temporal workflow
+- Documentation of the entire flow
 
-#### Acceptance Criteria:
-- The FastAPI application is deployed to a cloud provider or container orchestration platform.
-- The Temporal server and workflows are deployed and accessible.
-- The deployment is tested and verified.
-
-These user stories should help break down the problem into manageable tasks that can be tackled one at a time.
+**Technology:**
+- FastAPI
+- Temporal
+- Spacelift
