@@ -1,0 +1,12 @@
+frontend.enableClientVersionCheck:
+  - value: true
+    constraints: {}
+history.enableHistoryEventLogging:
+  - value: true
+    constraints: {}
+system.enableActivityEagerExecution:
+  - value: false
+    constraints: {}
+limit.maxIDLength:
+  - value: 255
+    constraints: {}
