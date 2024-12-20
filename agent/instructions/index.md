@@ -1,1 +1,0 @@
-See [Coding Standards](./standards/index.md)

@@ -1,0 +1,835 @@
+{
+  "account": {
+    "name": "avant"
+  },
+  "run_updated": {
+    "note": "Autodeploy is off",
+    "plan_policy_decision": null,
+    "policy_receipts": null,
+    "run": {
+      "based_on_local_workspace": false,
+      "branch": "develop",
+      "changes": [
+        {
+          "action": "changed",
+          "entity": {
+            "address": "argocd_application.airflow_application",
+            "data": {
+              "address": "argocd_application.airflow_application",
+              "mode": "managed",
+              "module": "",
+              "provider": "registry.terraform.io/argoproj-labs/argocd",
+              "tainted": false,
+              "values": {
+                "cascade": true,
+                "id": "3936a271",
+                "metadata": [
+                  {
+                    "annotations": {},
+                    "generation": 11276,
+                    "labels": {},
+                    "name": "8e9823c6",
+                    "namespace": "a3ed560d",
+                    "resource_version": "1851481c",
+                    "uid": "afc873e6"
+                  }
+                ],
+                "spec": [
+                  {
+                    "destination": [
+                      {
+                        "name": "7852b855",
+                        "namespace": "8e9823c6",
+                        "server": "e077b083"
+                      }
+                    ],
+                    "ignore_difference": [],
+                    "info": [],
+                    "project": "33f0688f",
+                    "revision_history_limit": 2,
+                    "source": [
+                      {
+                        "chart": "8237eedd",
+                        "directory": [],
+                        "helm": [
+                          {
+                            "file_parameter": [],
+                            "ignore_missing_value_files": false,
+                            "parameter": [
+                              {
+                                "force_string": false,
+                                "name": "7572bf88",
+                                "value": "5224f8aa"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "673dfcb4",
+                                "value": "5224f8aa"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "43ee711b",
+                                "value": "9cba829b"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "d3dd8548",
+                                "value": "8c77952d"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "805e356c",
+                                "value": "e65f82e8"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "92b90e83",
+                                "value": "5224f8aa"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "d4d90945",
+                                "value": "5224f8aa"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "8c6ecbfb",
+                                "value": "5224f8aa"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "e0129122",
+                                "value": "5224f8aa"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "746c5659",
+                                "value": "5224f8aa"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "e52e9c72",
+                                "value": "5224f8aa"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "f8b9b3df",
+                                "value": "ec13ab35"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "b37fb143",
+                                "value": "27fb57e9"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "4e131fb8",
+                                "value": "27fb57e9"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "d89ba876",
+                                "value": "5b09d0c7"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "72b65436",
+                                "value": "ec13ab35"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "1f1bc4a2",
+                                "value": "ec13ab35"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "625b107b",
+                                "value": "fbf3b001"
+                              },
+                              {
+                                "force_string": false,
+                                "name": "63471f19",
+                                "value": "5224f8aa"
+                              }
+                            ],
+                            "pass_credentials": false,
+                            "release_name": "7852b855",
+                            "skip_crds": false,
+                            "value_files": [],
+                            "values": "5681a584",
+                            "version": "7852b855"
+                          }
+                        ],
+                        "kustomize": [],
+                        "path": "2e1839a8",
+                        "plugin": [],
+                        "ref": "7852b855",
+                        "repo_url": "6384f461",
+                        "target_revision": "49f26ffc"
+                      }
+                    ],
+                    "sync_policy": [
+                      {
+                        "automated": [
+                          {
+                            "allow_empty": true,
+                            "prune": true,
+                            "self_heal": true
+                          }
+                        ],
+                        "managed_namespace_metadata": [],
+                        "retry": [],
+                        "sync_options": ["453a5dba"]
+                      }
+                    ]
+                  }
+                ],
+                "status": [
+                  {
+                    "conditions": [],
+                    "health": [
+                      {
+                        "message": "7852b855",
+                        "status": "de0ea0ee"
+                      }
+                    ],
+                    "operation_state": [
+                      {
+                        "finished_at": "f4013a00",
+                        "message": "9266f98e",
+                        "phase": "450e5b39",
+                        "retry_count": "27fb57e9",
+                        "started_at": "567f9ee2"
+                      }
+                    ],
+                    "reconciled_at": "7d13daff",
+                    "resources": [
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "daef12dd",
+                        "name": "1c60ab01",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "daef12dd",
+                        "name": "d62ca47a",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "daef12dd",
+                        "name": "25f1f07c",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [
+                          {
+                            "message": "7852b855",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "1128b4bf",
+                        "name": "d62ca47a",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [
+                          {
+                            "message": "7852b855",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "1128b4bf",
+                        "name": "31b6e6c8",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "27a43dfa",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "0b2a06ac",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "45966bdc",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "a4902bd9",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "d62ca47a",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "3f663d9c",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "8e2e2501",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "31b6e6c8",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "7852b855",
+                        "health": [],
+                        "hook": false,
+                        "kind": "89215fb9",
+                        "name": "371438f9",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "4db12c5b",
+                        "health": [
+                          {
+                            "message": "7852b855",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "15614186",
+                        "name": "0b2a06ac",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "4db12c5b",
+                        "health": [
+                          {
+                            "message": "7852b855",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "15614186",
+                        "name": "a4902bd9",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "4db12c5b",
+                        "health": [
+                          {
+                            "message": "7852b855",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "15614186",
+                        "name": "d62ca47a",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "4db12c5b",
+                        "health": [
+                          {
+                            "message": "7852b855",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "15614186",
+                        "name": "3f663d9c",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "4db12c5b",
+                        "health": [
+                          {
+                            "message": "7852b855",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "15614186",
+                        "name": "31b6e6c8",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "fa5eec51",
+                        "health": [
+                          {
+                            "message": "451caa71",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "785cc808",
+                        "name": "9cba829b",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "971800f2"
+                      },
+                      {
+                        "group": "fa5eec51",
+                        "health": [
+                          {
+                            "message": "451caa71",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "785cc808",
+                        "name": "f546f202",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "971800f2"
+                      },
+                      {
+                        "group": "fa5eec51",
+                        "health": [
+                          {
+                            "message": "451caa71",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "785cc808",
+                        "name": "e65f82e8",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "971800f2"
+                      },
+                      {
+                        "group": "fa5eec51",
+                        "health": [
+                          {
+                            "message": "451caa71",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "785cc808",
+                        "name": "cd040f53",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "971800f2"
+                      },
+                      {
+                        "group": "fa5eec51",
+                        "health": [
+                          {
+                            "message": "451caa71",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "785cc808",
+                        "name": "ec03ef14",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "971800f2"
+                      },
+                      {
+                        "group": "fa5eec51",
+                        "health": [
+                          {
+                            "message": "451caa71",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "785cc808",
+                        "name": "fbf3b001",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "971800f2"
+                      },
+                      {
+                        "group": "26293c7b",
+                        "health": [
+                          {
+                            "message": "7852b855",
+                            "status": "de0ea0ee"
+                          }
+                        ],
+                        "hook": false,
+                        "kind": "2871d3f5",
+                        "name": "d2be025e",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "2f4ebbcb",
+                        "health": [],
+                        "hook": false,
+                        "kind": "d69582a1",
+                        "name": "c6e14ae4",
+                        "namespace": "7852b855",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "2f4ebbcb",
+                        "health": [],
+                        "hook": false,
+                        "kind": "72bed85c",
+                        "name": "96475dba",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "2f4ebbcb",
+                        "health": [],
+                        "hook": false,
+                        "kind": "72bed85c",
+                        "name": "2377e869",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "2f4ebbcb",
+                        "health": [],
+                        "hook": false,
+                        "kind": "512a7e97",
+                        "name": "b8c8ac3c",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "2f4ebbcb",
+                        "health": [],
+                        "hook": false,
+                        "kind": "512a7e97",
+                        "name": "2a1a6f9a",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "d42388fe"
+                      },
+                      {
+                        "group": "0c8aa1fc",
+                        "health": [],
+                        "hook": false,
+                        "kind": "4bdfee89",
+                        "name": "e7cba43d",
+                        "namespace": "8e9823c6",
+                        "requires_pruning": false,
+                        "status": "5224d048",
+                        "sync_wave": "27fb57e9",
+                        "version": "971800f2"
+                      }
+                    ],
+                    "summary": [
+                      {
+                        "external_urls": ["24545536"],
+                        "images": ["7c81efb9", "0eb173b2"]
+                      }
+                    ],
+                    "sync": [
+                      {
+                        "revision": "49f26ffc",
+                        "revisions": [],
+                        "status": "5224d048"
+                      }
+                    ]
+                  }
+                ],
+                "timeouts": null,
+                "validate": true,
+                "wait": true
+              },
+              "values_hash": -4197748686642753500
+            },
+            "entity_type": "resource",
+            "entity_vendor": "terraform",
+            "name": "airflow_application",
+            "type": "argocd_application"
+          },
+          "moved": false,
+          "phase": "plan"
+        }
+      ],
+      "command": "",
+      "commit": {
+        "author": "nic-avant",
+        "branch": "develop",
+        "created_at": 1733345887000000000,
+        "hash": "4c2f796c8fd87f4d36c39801aa4bb1e12ba95919",
+        "message": "Merge pull request #129 from AvantFinCo/data-117844/add-var-for-subnet-ids",
+        "url": "https://github.com/AvantFinCo/terraform-argocd-airflow/commit/4c2f796c8fd87f4d36c39801aa4bb1e12ba95919"
+      },
+      "created_at": 1734381183098456000,
+      "creator_session": {
+        "admin": true,
+        "creator_ip": "15.181.183.100",
+        "login": "npayne81@avant.com",
+        "machine": false,
+        "name": "Nic Payne",
+        "teams": ["PIE_Team", "data_ops_admin"]
+      },
+      "drift_detection": false,
+      "flags": [],
+      "id": "01JF8JS83TPPXFPVRYYVV096P3",
+      "runtime_config": {
+        "after_apply": [],
+        "after_destroy": [],
+        "after_init": [],
+        "after_perform": [],
+        "after_plan": [],
+        "after_run": [],
+        "before_apply": [],
+        "before_destroy": [],
+        "before_init": [
+          "mkdir -p ~/.ssh",
+          "cp /mnt/workspace/id_rsa ~/.ssh/id_rsa",
+          "chmod 400 ~/.ssh/id_rsa",
+          "ssh-keyscan -t rsa github.com \u003e\u003e ~/.ssh/known_hosts"
+        ],
+        "before_perform": [],
+        "before_plan": [],
+        "environment": {},
+        "project_root": "",
+        "runner_image": "public.ecr.aws/spacelift/runner-terraform:latest",
+        "terraform_version": "1.5.7"
+      },
+      "state": "UNCONFIRMED",
+      "states_history": [
+        {
+          "new_state": "QUEUED"
+        },
+        {
+          "new_state": "READY"
+        },
+        {
+          "new_state": "PREPARING"
+        },
+        {
+          "new_state": "INITIALIZING"
+        },
+        {
+          "new_state": "PLANNING"
+        },
+        {
+          "new_state": "UNCONFIRMED",
+          "note": "Autodeploy is off"
+        }
+      ],
+      "triggered_by": "npayne81@avant.com",
+      "type": "TRACKED",
+      "updated_at": 1734381245511660000,
+      "user_provided_metadata": []
+    },
+    "stack": {
+      "additional_project_globs": [],
+      "administrative": false,
+      "autodeploy": false,
+      "branch": "develop",
+      "id": "glbdev-use2-eks-delhi-airflow-01",
+      "labels": [
+        "airflow",
+        "glbdev-use2-eks-delhi",
+        "service",
+        "terraform-version:1.5.7"
+      ],
+      "locked_by": null,
+      "name": "glbdev-use2-eks-delhi-airflow-01",
+      "namespace": "AvantFinCo",
+      "project_root": "",
+      "repository": "terraform-argocd-airflow",
+      "space": {
+        "id": "global-dev-01GVZWQ5WV36BRQARETFNFCQJY",
+        "labels": ["space"],
+        "name": "global-dev"
+      },
+      "state": "UNCONFIRMED",
+      "terraform_version": "1.5.7",
+      "tracked_commit": {
+        "author": "nic-avant",
+        "branch": "develop",
+        "created_at": 1733345887000000000,
+        "hash": "4c2f796c8fd87f4d36c39801aa4bb1e12ba95919",
+        "message": "Merge pull request #129 from AvantFinCo/data-117844/add-var-for-subnet-ids",
+        "url": "https://github.com/AvantFinCo/terraform-argocd-airflow/commit/4c2f796c8fd87f4d36c39801aa4bb1e12ba95919"
+      },
+      "worker_pool": {
+        "id": "01GAVS047E1E1Y2PNMFGTX2FHR",
+        "labels": [],
+        "name": "AWS - Global Services",
+        "public": false
+      }
+    },
+    "state": "UNCONFIRMED",
+    "timing": [
+      {
+        "duration": 220262000,
+        "state": "QUEUED"
+      },
+      {
+        "duration": 3425050000,
+        "state": "READY"
+      },
+      {
+        "duration": 4165222000,
+        "state": "PREPARING"
+      },
+      {
+        "duration": 13350261000,
+        "state": "INITIALIZING"
+      },
+      {
+        "duration": 40475681000,
+        "state": "PLANNING"
+      }
+    ],
+    "urls": {
+      "run": "https://avant.app.spacelift.io/stack/glbdev-use2-eks-delhi-airflow-01/run/01JF8JS83TPPXFPVRYYVV096P3"
+    },
+    "username": ""
+  },
+  "webhook_endpoints": [
+    {
+      "id": "datadog-metrics-datadoghq-com",
+      "labels": ["datadog", "env:prod", "ddmetrics"]
+    }
+  ]
+}

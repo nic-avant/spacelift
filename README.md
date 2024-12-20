@@ -2,6 +2,14 @@
 
 This project provides a simple client library for working with the [spacelift.io](https://spacelift.io) API, as well as a webhook and workflow management system for Spacelift stack execution.
 
+## Project Design
+
+For detailed design specifications, please refer to our design documentation:
+
+- [Deliverables](agent/design/deliverables.md)
+- [Project Overview](agent/design/overview.md)
+- [Technology Stack](agent/design/tech-stack.md)
+
 ## Essential features:
 
 ### Spacelift Client
