@@ -3,6 +3,7 @@ import logging
 from temporalio.client import Client
 from temporalio.worker import Worker
 from src.spacelift.workflow.spacelift_webhook_workflow import SpaceliftWebhookWorkflow
+from src.spacelift.workflow.dummy_workflow import DummySpaceLiftWorkflow
 
 async def main():
     # Configure logging

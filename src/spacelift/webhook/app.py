@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import Dict, Any
 from temporalio.client import Client
 from src.spacelift.workflow.spacelift_webhook_workflow import SpaceliftWebhookWorkflow
+from src.spacelift.workflow.dummy_workflow import DummySpaceLiftWorkflow
 
 import json
 import logging

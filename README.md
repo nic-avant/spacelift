@@ -88,7 +88,34 @@ The webhook and workflow management features are currently under development. He
     - Temporal server running on port 7233
     - Web UI accessible at http://localhost:8088
     - PostgreSQL persistence layer
-  - Workflow definitions and worker implementation coming soon
+  - Dummy workflow implemented for testing and demonstration
+  - New `/dummy-workflow` endpoint added to webhook
+  - Supports flexible payload processing and logging
+
+#### Postman Collection for Workflow Testing
+A comprehensive Postman collection is provided to test workflow execution:
+
+##### Collection Details
+- **Location**: `postman/Spacelift_Workflow_Collection.json`
+- **Test Scenarios**:
+  1. Dummy Workflow - Basic Test
+     * Simple payload testing
+     * Validates basic workflow execution
+  2. Dummy Workflow - Complex Payload
+     * Nested JSON structure
+     * Tests workflow handling of complex data
+  3. Spacelift Webhook - Sample Payload
+     * Simulates actual Spacelift webhook event
+     * Validates webhook integration
+
+##### Using the Postman Collection
+1. Install Postman (if not already installed)
+2. Import `Spacelift_Workflow_Collection.json`
+3. Ensure local server is running:
+   ```bash
+   poetry run python src/spacelift/webhook/app.py
+   ```
+4. Execute collection requests to test workflow endpoints
 
 #### Running the webhook server
 To run the webhook server:
@@ -171,7 +198,10 @@ poetry run pytest
 ```
 
 ### Running the webhook server
-(Instructions for running the webhook server will be added as it is implemented)
+```bash
+poetry run python src/spacelift/webhook/app.py
+```
 
 ### Running the Temporal worker
-(Instructions for running the Temporal worker will be added as it is implemented)
+```bash
+poetry run python src/spacelift/temporal_worker.py

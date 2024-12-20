@@ -7,3 +7,5 @@ venv
 dist/
 
 *__pycache__*
+JIRA.md
+notification-policy.example.global-dev-delhi-airflow02-env-var.json
