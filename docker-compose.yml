@@ -22,7 +22,7 @@ services:
       postgresql:
         condition: service_healthy
     environment:
-      - DB=postgresql
+      - DB=temporal-postgresql
       - DB_PORT=5432      # Internal PostgreSQL port
       - POSTGRES_USER=temporal
       - POSTGRES_PWD=temporal
@@ -48,8 +48,8 @@ services:
     networks:
       - temporal-network
 
-  spacelift-api:
-    container_name: spacelift-api
+  change-handler:
+    container_name: change-handler
     build: 
       context: .
       dockerfile: Dockerfile
@@ -59,13 +59,7 @@ services:
       - temporal-network
     depends_on:
       - temporal
-    environment:
-      - TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-temporal:7233}
-      - SPACELIFT_BASE_URL=${SPACELIFT_BASE_URL}
-      - SPACELIFT_KEY_ID=${SPACELIFT_KEY_ID}
-      - SPACELIFT_KEY_SECRET=${SPACELIFT_KEY_SECRET}
-      - API_HOST=${API_HOST:-0.0.0.0}
-      - API_PORT=${API_PORT:-8000}
+    env_file: .env
 
 networks:
   temporal-network:
