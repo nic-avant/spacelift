@@ -30,17 +30,21 @@ async def webhook_endpoint(request: Request):
         logger.info(f"Received webhook payload: {json.dumps(payload, indent=2)}")
         
         # Initialize Temporal client
-        client = await Client.connect("localhost:7233")
+        logger.info("Attempting to connect to Temporal server")
+        client = await Client.connect("temporal:7233")
+        logger.info("Successfully connected to Temporal server")
         
         # Start the Temporal workflow with the full payload
+        workflow_id = f"spacelift-webhook-{payload.get('run_updated', {}).get('run', {}).get('id', 'unknown')}"
+        logger.info(f"Starting workflow with ID: {workflow_id}")
         result = await client.start_workflow(
             SpaceliftWebhookWorkflow.run,
             payload,
-            id=f"spacelift-webhook-{payload.get('run_updated', {}).get('run', {}).get('id', 'unknown')}",
+            id=workflow_id,
             task_queue="spacelift-task-queue",
         )
         
-        logger.info(f"Workflow started with ID: {result.id}")
+        logger.info(f"Workflow started successfully with ID: {result.id}")
         
         return {
             "message": "Webhook processed and workflow triggered", 
