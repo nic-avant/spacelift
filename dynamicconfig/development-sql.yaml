@@ -1,0 +1,13 @@
+system.advancedVisibilityWritingMode:
+  - value: "off"
+
+system.enableReadVisibility:
+  - value: true
+
+system.defaultNamespace:
+  - value: "default"
+
+system.defaultNamespaceRetention:
+  - value:
+      namespaceRetentionDays: 7
+      namespaceRetentionDeleteMode: "default"
