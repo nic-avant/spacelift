@@ -19,7 +19,7 @@ class WebhookPayload(BaseModel):
 
 async def get_dependent_stacks(stack_id: str) -> list[dict]:
     sl = Spacelift()
-    stacks = sl.get_stacks(query_fields=["id", "labels", "contexts"])
+    stacks = sl.get_stacks(query_fields=["id", "labels", "attachedContexts { contextId }"])
     #dependent_stacks = [stack for stack in stacks if stack.get("labels") and "dependsOn" in stack["labels"] and stack["labels"]["dependsOn"] == stack_id]
     dependent_stacks = [stack for stack in stacks if any(f"dependsOn:{stack_id}" in x for x in stack.get("labels", []))]
     return dependent_stacks
