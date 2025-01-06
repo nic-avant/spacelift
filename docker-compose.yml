@@ -43,8 +43,6 @@ services:
       - ENABLE_ES=true
       - ES_SEEDS=elasticsearch
       - ES_VERSION=v7
-      - TEMPORAL_DEBUG=true
-      - LOG_LEVEL=debug
     image: temporalio/auto-setup:${TEMPORAL_VERSION}
     networks:
       - temporal-network
@@ -76,6 +74,7 @@ services:
       - temporal-network
     ports:
       - 8080:8080
+
   spacelift-api:
     container_name: spacelift-api
     build: 
