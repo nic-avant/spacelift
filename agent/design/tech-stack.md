@@ -1,43 +1,34 @@
 # Technology Stack
 
 ## Core Technologies
-- **Language**: Python 3.9+
-- **Package Management**: Poetry
-- **Type Checking**: Mypy
-
-## API and Networking
-- **API Client**: GraphQL (via `gql` package)
-- **Web Framework**: FastAPI
-- **HTTP Client**: `httpx` or `requests`
-
-## Workflow Orchestration
-- **Workflow Engine**: Temporal
-- **Temporal Server**: Local development with Docker
-- **Persistence Layer**: PostgreSQL
-
-## Development and Testing
-- **Testing Framework**: pytest
-- **Mocking**: Built-in mocked client
-- **Pre-commit Hooks**: Code quality and formatting
-- **Linting**: 
-  - flake8
-  - black
-  - isort
-
-## Deployment and Infrastructure
-- **Containerization**: Docker
+- **Language**: Python 3.10+
 - **Dependency Management**: Poetry
-- **CI/CD**: (To be determined)
+- **API Interaction**: GraphQL (via `gql` library)
+- **Workflow Management**: Temporal
+- **Web Framework**: FastAPI
+- **Webhook Handling**: FastAPI
 
-## External Integrations
-- **Primary Integration**: Spacelift.io
-- **Workflow Monitoring**: Temporal Web UI
+## Key Libraries
+- `gql`: GraphQL client for Spacelift API interactions
+- `temporalio`: Workflow orchestration
+- `fastapi`: Web framework for webhook endpoints
+- `pydantic`: Data validation
+- `requests`: HTTP client library
 
-## Environment Management
-- **Virtual Environments**: Poetry
-- **Environment Variables**: python-dotenv
-- **Configuration**: YAML-based dynamic configuration
+## Project Structure
+- `src/spacelift/`: Main source code directory
+  - `main.py`: Core Spacelift API client
+  - `webhook/`: Webhook handling
+  - `workflow/`: Temporal workflow implementations
+  - `tests/`: Project test suite
 
-## Monitoring and Logging
-- **Logging**: Python's built-in logging
-- **Workflow Tracking**: Temporal Web UI
+## Development Tools
+- Type Checking: mypy
+- Testing: pytest
+- Linting: flake8, black
+- Environment Management: direnv, .env support
+
+## Deployment Considerations
+- Docker support via Dockerfile
+- Environment configuration via .env and .envrc
+- Supports local and containerized deployments
