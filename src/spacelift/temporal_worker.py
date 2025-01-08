@@ -5,6 +5,7 @@ from temporalio.worker import Worker
 from temporalio.activity import activity
 from src.spacelift.workflow.spacelift_webhook_workflow import SpaceliftWebhookWorkflow
 from src.spacelift.workflow.dummy_workflow import DummySpaceLiftWorkflow
+from src.spacelift.workflow.dependent_stacks_workflow import DependentStacksWorkflow
 from src.spacelift.main import Spacelift
 
 @activity.defn
@@ -39,8 +40,12 @@ async def main():
     worker = Worker(
         client,
         task_queue="spacelift-task-queue",
-        workflows=[SpaceliftWebhookWorkflow],
-        activities=[get_dependent_stacks_activity]  # Add the new activity here
+        workflows=[
+            SpaceliftWebhookWorkflow, 
+            DummySpaceLiftWorkflow,
+            DependentStacksWorkflow
+        ],
+        activities=[get_dependent_stacks_activity]
     )
 
     try:
