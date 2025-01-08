@@ -6,7 +6,7 @@ from src.spacelift.workflow.spacelift_webhook_workflow import SpaceliftWebhookWo
 from src.spacelift.workflow.dummy_workflow import DummySpaceLiftWorkflow
 import json
 import logging
-from src.spacelift.main import Spacelift
+from src.spacelift.temporal_worker import get_dependent_stacks_activity
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -16,13 +16,6 @@ class WebhookPayload(BaseModel):
     Flexible payload model to accept various Spacelift webhook structures
     """
     payload: Dict[str, Any] = Field(..., description="Full Spacelift webhook payload")
-
-async def get_dependent_stacks(stack_id: str) -> list[dict]:
-    sl = Spacelift()
-    stacks = sl.get_stacks(query_fields=["id", "labels", "attachedContexts { contextId }"])
-    #dependent_stacks = [stack for stack in stacks if stack.get("labels") and "dependsOn" in stack["labels"] and stack["labels"]["dependsOn"] == stack_id]
-    dependent_stacks = [stack for stack in stacks if any(f"dependsOn:{stack_id}" in x for x in stack.get("labels", []))]
-    return dependent_stacks
 
 @app.post("/webhook")
 async def webhook_endpoint(request: Request):
@@ -39,8 +32,8 @@ async def webhook_endpoint(request: Request):
         # Extract stack id from payload
         stack_id = payload.get('run_updated', {}).get('stack', {}).get('id', 'unknown')
         
-        # Get dependent stacks
-        dependent_stacks = await get_dependent_stacks(stack_id)
+        # Get dependent stacks using Temporal activity
+        dependent_stacks = await get_dependent_stacks_activity(stack_id)
         logger.info(f"Dependent stacks: {dependent_stacks}")
 
         # Initialize Temporal client

@@ -2,8 +2,29 @@ import asyncio
 import logging
 from temporalio.client import Client
 from temporalio.worker import Worker
+from temporalio.activity import activity
 from src.spacelift.workflow.spacelift_webhook_workflow import SpaceliftWebhookWorkflow
 from src.spacelift.workflow.dummy_workflow import DummySpaceLiftWorkflow
+from src.spacelift.main import Spacelift
+
+@activity.defn
+async def get_dependent_stacks_activity(stack_id: str) -> list[dict]:
+    """
+    Temporal activity to retrieve dependent stacks for a given stack_id.
+    
+    Args:
+        stack_id (str): The ID of the stack to find dependencies for.
+    
+    Returns:
+        list[dict]: A list of dependent stacks.
+    """
+    sl = Spacelift()
+    stacks = sl.get_stacks(query_fields=["id", "labels", "attachedContexts { contextId }"])
+    dependent_stacks = [
+        stack for stack in stacks 
+        if any(f"dependsOn:{stack_id}" in x for x in stack.get("labels", []))
+    ]
+    return dependent_stacks
 
 async def main():
     # Configure logging
@@ -19,7 +40,7 @@ async def main():
         client,
         task_queue="spacelift-task-queue",
         workflows=[SpaceliftWebhookWorkflow],
-        activities=[]  # Add any activities if needed
+        activities=[get_dependent_stacks_activity]  # Add the new activity here
     )
 
     try:
