@@ -1,11 +1,19 @@
-from temporalio import workflow
-from temporalio.common import RetryPolicy
 from datetime import timedelta
-from typing import List, Dict
+from typing import Dict, List
+
+from temporalio import workflow
+from temporalio.common import (
+    RetryPolicy,
+)
 
 with workflow.unsafe.imports_passed_through():
-    from temporal.activities.get_dependent_stacks import get_dependent_stacks_activity, InputParams
-    from temporal.activities.dummy_activity import dummy_activity
+    from temporal.activities.dummy_activity import (
+        dummy_activity,
+    )
+    from temporal.activities.get_dependent_stacks import (
+        InputParams,
+        get_dependent_stacks_activity,
+    )
 
 @workflow.defn
 class DependentStacksWorkflow:

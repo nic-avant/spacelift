@@ -1,13 +1,18 @@
 import asyncio
 import logging
+
+from temporalio import workflow
 from temporalio.client import Client
 from temporalio.worker import Worker
-from temporalio import workflow
+
 # Pass the activities through the sandbox
 with workflow.unsafe.imports_passed_through():
-    from temporal.workflow.routing_workflow import DependentStacksWorkflow
-    from temporal.activities.get_dependent_stacks import get_dependent_stacks_activity
-    from temporal.activities.dummy_activity import dummy_activity
+    from temporal.activities.get_dependent_stacks import (
+        get_dependent_stacks_activity,
+    )
+    from temporal.workflow.routing_workflow import (
+        DependentStacksWorkflow,
+    )
 
 
 async def main():
@@ -27,7 +32,7 @@ async def main():
         workflows=[
             DependentStacksWorkflow
         ],
-        activities=[get_dependent_stacks_activity, dummy_activity]
+        activities=[get_dependent_stacks_activity]
     )
 
     try:
