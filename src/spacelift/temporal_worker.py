@@ -10,7 +10,7 @@ async def main():
     logger = logging.getLogger(__name__)
 
     # Connect to Temporal server
-    client = await Client.connect("temporal:7233")
+    client = await Client.connect("localhost:7233")
     logger.info("Connected to Temporal server")
 
     # Create and run the worker
