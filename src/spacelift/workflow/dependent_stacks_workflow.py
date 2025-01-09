@@ -43,18 +43,18 @@ class DependentStacksWorkflow:
             List[Dict]: A list of dependent stacks that can be processed.
         """
         # Retry policy for the activity
-        # retry_policy = RetryPolicy(
-        #     initial_interval=timedelta(seconds=1),
-        #     maximum_interval=timedelta(seconds=60),
-        #     maximum_attempts=3,
-        #     non_retryable_error_types=[]
-        # )
+        retry_policy = RetryPolicy(
+            initial_interval=timedelta(seconds=1),
+            maximum_interval=timedelta(seconds=60),
+            maximum_attempts=3,
+            non_retryable_error_types=[]
+        )
 
         # Execute the get_dependent_stacks activity
         dependent_stacks = await workflow.execute_activity(
             get_dependent_stacks_activity,
             InputParams(stack_id=stack_id),
-            #retry_policy=retry_policy,
+            retry_policy=retry_policy,
             start_to_close_timeout=timedelta(seconds=30)
         )
 
