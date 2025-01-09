@@ -1,5 +1,18 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, asdict, is_dataclass
 from typing import List, Optional, Dict, Union, Any
+import json
+
+def convert_to_dict(obj: Any) -> Any:
+    """Helper function to convert objects to dictionaries recursively"""
+    if is_dataclass(obj):
+        return {k: convert_to_dict(v) for k, v in asdict(obj).items()}
+    elif isinstance(obj, dict):
+        return {k: convert_to_dict(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_to_dict(item) for item in obj]
+    elif isinstance(obj, (str, int, float, bool, type(None))):
+        return obj
+    return str(obj)
 
 @dataclass
 class Space:
@@ -142,6 +155,7 @@ class Stack:
     state: str
     terraform_version: Optional[str]
     tracked_commit: Commit
+    worker_pool: WorkerPool
 
 @dataclass
 class Timing:
@@ -178,7 +192,15 @@ class InternalError:
 @dataclass
 class NotificationPolicy:
     account: Dict[str, str]
-    module_version: Dict[str, Union[Module, ModuleVersion]]
     run_updated: RunUpdated
     webhook_endpoints: List[WebhookEndpoint]
     internal_error: Optional[InternalError] = None
+    module_version: Optional[Dict[str, Union[Module, ModuleVersion]]] = None
+
+    def to_dict(self) -> dict:
+        """Convert the notification policy to a dictionary"""
+        return convert_to_dict(self)
+
+    def to_json(self) -> str:
+        """Convert the notification policy to a JSON string"""
+        return json.dumps(self.to_dict())
