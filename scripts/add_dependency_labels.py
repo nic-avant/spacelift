@@ -1,4 +1,31 @@
 #!/usr/bin/env python3
+"""
+Spacelift Stack Dependency Label Manager
+
+This script manages dependency labels for Spacelift stacks by analyzing the dependency graph
+and adding appropriate dependsOn labels. It uses the Spacelift GraphQL API's dependenciesFullGraph
+field, which returns dependencies in a specific order:
+
+1. First, all downstream dependencies (stacks that depend on us)
+2. Then our own stack
+3. Finally, all upstream dependencies (stacks that we depend on)
+
+Using this ordering, the script can identify which stacks are upstream dependencies
+(stacks that we depend on) and add the appropriate dependsOn labels.
+
+Example:
+    If Stack B depends on Stack C, and Stack A depends on Stack B, then:
+    - Querying Stack B's dependencies returns: [A, B, C]
+    - The script will add 'dependsOn:C' to Stack B's labels
+    - Stack A would have 'dependsOn:B' (when run for Stack A)
+
+Usage:
+    python3 add_dependency_labels.py [--apply] [--debug]
+
+Options:
+    --apply    Actually apply the changes (default is dry run)
+    --debug    Show debug information including API responses
+"""
 
 import os
 import sys
@@ -8,8 +35,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.spacelift.main import Spacelift
 from gql import gql
 
-TARGET_STACK = "glbdev-use2-eks-delhi-airflow-01"
-TARGET_STACK = "global-dev"
+# TODO: Replace with command line argument
+# For now, hardcoded to test with a specific stack
+# This will be replaced with a command line argument when the script is ready
+# to process multiple stacks
+TARGET_STACK = "glbdev-use2-eks-delhi"
 def get_stack_dependencies(sl: Spacelift, stack_id: str) -> list:
     """
     Get upstream dependencies for a specific stack.
@@ -86,7 +116,26 @@ def get_stack_dependencies(sl: Spacelift, stack_id: str) -> list:
     return []
 
 def main():
-    """Add dependency labels to target stack based on its dependencies."""
+    """
+    Add dependency labels to target stack based on its upstream dependencies.
+    
+    This script analyzes a stack's dependencies in Spacelift and adds appropriate
+    dependsOn labels. It works by:
+    
+    1. Getting all stacks to build a mapping of IDs to names
+    2. Finding the target stack we want to analyze
+    3. Getting the stack's full dependency graph from Spacelift
+    4. Using the ordering in dependenciesFullGraph to identify upstream dependencies:
+       - Dependencies listed before our stack are downstream (they depend on us)
+       - Dependencies listed after our stack are upstream (we depend on them)
+    5. Creating dependsOn labels for each upstream dependency
+    6. Updating the stack's labels if they've changed
+    
+    The script supports:
+    - Dry run mode (default) to preview changes
+    - Debug mode to see detailed API responses
+    - Apply mode to actually make the changes
+    """
     parser = argparse.ArgumentParser(description='Add dependency labels to Spacelift stacks')
     parser.add_argument('--apply', action='store_true', help='Actually apply the changes (default is dry run)')
     parser.add_argument('--debug', action='store_true', help='Show debug information')
@@ -94,7 +143,10 @@ def main():
 
     sl = Spacelift()
     
-    # First get basic stack info
+    # First get basic stack info - we need this to:
+    # 1. Find our target stack
+    # 2. Get its current labels
+    # 3. Map dependency IDs to readable names
     print("Fetching stacks...")
     stacks = sl.get_stacks(query_fields=[
         "id",
@@ -104,7 +156,7 @@ def main():
     
     print(f"\nFound {len(stacks)} total stacks")
     
-    # Find our target stack
+    # Find our target stack by name
     target_stacks = [s for s in stacks if s["name"] == TARGET_STACK]
     if not target_stacks:
         print(f"Stack '{TARGET_STACK}' not found!")
@@ -117,7 +169,9 @@ def main():
     print(f"\nAnalyzing stack {TARGET_STACK} ({target_id})")
     print(f"Current labels: {current_labels}")
     
-    # Get actual dependencies from Spacelift
+    # Get dependencies from Spacelift
+    # The get_stack_dependencies function will use the ordering in dependenciesFullGraph
+    # to determine which stacks are upstream dependencies
     print("\nFetching dependencies...")
     try:
         dependencies = get_stack_dependencies(sl, target_id)
@@ -133,22 +187,24 @@ def main():
         print("No dependencies found")
         return
     
+    # Print human-readable dependency information
     print(f"\nFound {len(dependencies)} dependencies:")
     for dep_id in dependencies:
-        # Find stack name for this ID
+        # Map dependency IDs to stack names for better readability
         dep_stack = next((s for s in stacks if s["id"] == dep_id), None)
         if dep_stack:
             print(f"  {dep_stack['name']} ({dep_id})")
         else:
             print(f"  Unknown stack ({dep_id})")
     
-    # Create dependency labels
+    # Create new dependsOn labels for each upstream dependency
     new_dependency_labels = [f"dependsOn:{dep_id}" for dep_id in dependencies]
     
-    # Filter out existing dependency labels
+    # Preserve non-dependency labels while replacing all dependency labels
     existing_dep_labels = [l for l in current_labels if l.startswith("dependsOn:")]
     new_labels = [l for l in current_labels if not l.startswith("dependsOn:")] + new_dependency_labels
     
+    # Only update if the dependency labels have changed
     if set(existing_dep_labels) != set(new_dependency_labels):
         print("\nChanges needed:")
         print(f"  Current dependency labels: {existing_dep_labels}")
