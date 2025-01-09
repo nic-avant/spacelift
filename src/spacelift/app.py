@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException
 from temporalio.client import Client
-from spacelift.workflow.routing_workflow import DependentStacksWorkflow
+from temporal.workflow.routing_workflow import DependentStacksWorkflow
+from temporal.activities.get_dependent_stacks import InputParams
 import json
 import logging
 import uuid
@@ -21,16 +22,18 @@ async def webhook_endpoint(request: Request):
         raw_payload = await request.json()
         
         try:
-            # Convert to NotificationPolicy object
-            payload = NotificationPolicy(**raw_payload)
+            # Convert to NotificationPolicy object - Pydantic handles validation
+            payload = NotificationPolicy.parse_obj(raw_payload)
             
-            # Log using the to_dict method
-            logger.info(f"Received webhook payload: {json.dumps(payload.to_dict(), indent=2)}")
+            # Log using Pydantic's json() method
+            logger.info(f"Received webhook payload: {payload.json(indent=2)}")
         except Exception as e:
             logger.error(f"Error parsing payload: {str(e)}")
             logger.error(f"Raw payload: {json.dumps(raw_payload, indent=2)}")
             raise HTTPException(status_code=400, detail=f"Invalid payload format: {str(e)}")
 
+        stack_id = payload.run_updated.stack.id
+        
         # Generate a unique uuid for the workflow
         wf_id = str(uuid.uuid4())
         
@@ -44,6 +47,7 @@ async def webhook_endpoint(request: Request):
             logger.info(f"Starting workflow with ID: {wf_id}")
             result = await client.start_workflow(
                 DependentStacksWorkflow.run,
+                InputParams(stack_id),
                 id=wf_id,
                 task_queue="spacelift-task-queue",
             )

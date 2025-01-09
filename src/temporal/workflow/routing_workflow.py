@@ -3,7 +3,9 @@ from temporalio.common import RetryPolicy
 from datetime import timedelta
 from typing import List, Dict
 
-from spacelift.activities.get_dependent_stacks import get_dependent_stacks_activity, InputParams
+with workflow.unsafe.imports_passed_through():
+    from temporal.activities.get_dependent_stacks import get_dependent_stacks_activity, InputParams
+    from temporal.activities.dummy_activity import dummy_activity
 
 @workflow.defn
 class DependentStacksWorkflow:
@@ -33,6 +35,11 @@ class DependentStacksWorkflow:
             retry_policy=retry_policy,
             start_to_close_timeout=timedelta(seconds=30)
         )
+        # dependent_stacks = await workflow.execute_activity(
+        #     dummy_activity,
+        #     retry_policy=retry_policy,
+        #     start_to_close_timeout=timedelta(seconds=30)
+        # )
 
         # Optional: Add additional processing logic for dependent stacks
         workflow.logger.info(f"Found {len(dependent_stacks)} dependent stacks for stack {stack_id}")

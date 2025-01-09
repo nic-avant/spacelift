@@ -17,6 +17,7 @@ async def get_dependent_stacks_activity(input: InputParams) -> list[dict]:
     Returns:
         list[dict]: A list of dependent stacks.
     """
+
     sl = Spacelift()
     stacks = sl.get_stacks(query_fields=["id", "labels", "attachedContexts { contextId }"])
     dependent_stacks = [

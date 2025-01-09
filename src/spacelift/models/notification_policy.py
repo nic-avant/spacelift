@@ -1,48 +1,31 @@
-from dataclasses import dataclass, asdict, is_dataclass
 from typing import List, Optional, Dict, Union, Any
-import json
+from pydantic import BaseModel, Field
 
-def convert_to_dict(obj: Any) -> Any:
-    """Helper function to convert objects to dictionaries recursively"""
-    if is_dataclass(obj):
-        return {k: convert_to_dict(v) for k, v in asdict(obj).items()}
-    elif isinstance(obj, dict):
-        return {k: convert_to_dict(v) for k, v in obj.items()}
-    elif isinstance(obj, list):
-        return [convert_to_dict(item) for item in obj]
-    elif isinstance(obj, (str, int, float, bool, type(None))):
-        return obj
-    return str(obj)
-
-@dataclass
-class Space:
+class Space(BaseModel):
     id: str
     labels: List[str]
     name: str
 
-@dataclass
-class WorkerPool:
+class WorkerPool(BaseModel):
     public: bool
     id: str
     name: str
-    labels: List[str]
+    labels: List[str] = Field(default_factory=list)
 
-@dataclass
-class Module:
+class Module(BaseModel):
     id: str
     administrative: bool
     branch: str
-    labels: List[str]
-    namespace: Optional[str]
+    labels: List[str] = Field(default_factory=list)
+    namespace: Optional[str] = None
     name: str
-    project_root: Optional[str]
+    project_root: Optional[str] = None
     repository: str
     terraform_provider: str
     space: Space
     worker_pool: WorkerPool
 
-@dataclass
-class Commit:
+class Commit(BaseModel):
     author: str
     branch: str
     created_at: int
@@ -50,157 +33,139 @@ class Commit:
     message: str
     url: str
 
-@dataclass
-class TestRun:
+class TestRun(BaseModel):
     created_at: int
     id: str
     state: str
     title: str
     updated_at: int
 
-@dataclass
-class ModuleVersion:
+class ModuleVersion(BaseModel):
     commit: Commit
     created_at: int
     id: str
     latest: bool
     number: str
     state: str
-    test_runs: List[TestRun]
+    test_runs: List[TestRun] = Field(default_factory=list)
 
-@dataclass
-class CreatorSession:
+class CreatorSession(BaseModel):
     admin: bool
     creator_ip: str
     login: str
     name: str
-    teams: List[str]
+    teams: List[str] = Field(default_factory=list)
     machine: bool
 
-@dataclass
-class Entity:
+class Entity(BaseModel):
     address: str
-    data: Optional[Dict[str, Any]]
+    data: Optional[Dict[str, Any]] = None
     name: str
     type: str
     entity_vendor: str
     entity_type: str
 
-@dataclass
-class Change:
+class Change(BaseModel):
     action: str
     entity: Entity
     phase: str
     moved: bool = False
 
-@dataclass
-class RuntimeConfig:
-    after_apply: List[str]
-    after_destroy: List[str]
-    after_init: List[str]
-    after_perform: List[str]
-    after_plan: List[str]
-    after_run: List[str]
-    before_apply: List[str]
-    before_destroy: List[str]
-    before_init: List[str]
-    before_perform: List[str]
-    before_plan: List[str]
-    environment: Dict[str, str]
-    project_root: str
+class RuntimeConfig(BaseModel):
+    after_apply: List[str] = Field(default_factory=list)
+    after_destroy: List[str] = Field(default_factory=list)
+    after_init: List[str] = Field(default_factory=list)
+    after_perform: List[str] = Field(default_factory=list)
+    after_plan: List[str] = Field(default_factory=list)
+    after_run: List[str] = Field(default_factory=list)
+    before_apply: List[str] = Field(default_factory=list)
+    before_destroy: List[str] = Field(default_factory=list)
+    before_init: List[str] = Field(default_factory=list)
+    before_perform: List[str] = Field(default_factory=list)
+    before_plan: List[str] = Field(default_factory=list)
+    environment: Dict[str, str] = Field(default_factory=dict)
+    project_root: str = ""
     runner_image: str
     terraform_version: str
 
-@dataclass
-class PolicyReceipt:
-    flags: List[str]
+class PolicyReceipt(BaseModel):
+    flags: List[str] = Field(default_factory=list)
     name: str
     outcome: str
     type: str
 
-@dataclass
-class Run:
-    based_on_local_workspace: bool
+class Run(BaseModel):
+    based_on_local_workspace: bool = False
     branch: str
-    changes: List[Change]
-    command: str
+    changes: List[Change] = Field(default_factory=list)
+    command: str = ""
     commit: Commit
     created_at: int
     creator_session: CreatorSession
-    drift_detection: bool
-    flags: List[str]
+    drift_detection: bool = False
+    flags: List[str] = Field(default_factory=list)
     id: str
     runtime_config: RuntimeConfig
     state: str
-    triggered_by: Optional[str]
+    triggered_by: Optional[str] = None
     type: str
     updated_at: int
-    user_provided_metadata: List[str]
+    user_provided_metadata: List[str] = Field(default_factory=list)
     policy_receipts: Optional[List[PolicyReceipt]] = None
+    states_history: Optional[List[Dict[str, str]]] = None
 
-@dataclass
-class Stack:
-    administrative: bool
-    autodeploy: bool
-    autoretry: bool
+class Stack(BaseModel):
+    administrative: bool = False
+    autodeploy: bool = False
+    autoretry: Optional[bool] = None
     branch: str
     id: str
-    labels: List[str]
-    locked_by: Optional[str]
+    labels: List[str] = Field(default_factory=list)
+    locked_by: Optional[str] = None
     name: str
-    namespace: Optional[str]
-    project_root: Optional[str]
+    namespace: Optional[str] = None
+    project_root: Optional[str] = None
     repository: str
     space: Space
     state: str
-    terraform_version: Optional[str]
+    terraform_version: Optional[str] = None
     tracked_commit: Commit
-    worker_pool: WorkerPool
+    worker_pool: Optional[WorkerPool] = None
+    additional_project_globs: Optional[List[str]] = None
 
-@dataclass
-class Timing:
+class Timing(BaseModel):
     duration: int
     state: str
 
-@dataclass
-class Urls:
+class Urls(BaseModel):
     run: str
 
-@dataclass
-class RunUpdated:
-    state: str
-    username: str
+class RunUpdated(BaseModel):
+    state: str = ""
+    username: str = ""
     note: str
     run: Run
     stack: Stack
-    timing: List[Timing]
+    timing: List[Timing] = Field(default_factory=list)
     urls: Urls
     plan_policy_decision: Optional[str] = None
     policy_receipts: Optional[List[PolicyReceipt]] = None
 
-@dataclass
-class WebhookEndpoint:
+class WebhookEndpoint(BaseModel):
     id: str
-    labels: List[str]
+    labels: List[str] = Field(default_factory=list)
 
-@dataclass
-class InternalError:
+class InternalError(BaseModel):
     error: str
     message: str
     severity: str
 
-@dataclass
-class NotificationPolicy:
+class NotificationPolicy(BaseModel):
     account: Dict[str, str]
     run_updated: RunUpdated
-    webhook_endpoints: List[WebhookEndpoint]
+    webhook_endpoints: List[WebhookEndpoint] = Field(default_factory=list)
     internal_error: Optional[InternalError] = None
     module_version: Optional[Dict[str, Union[Module, ModuleVersion]]] = None
 
-    def to_dict(self) -> dict:
-        """Convert the notification policy to a dictionary"""
-        return convert_to_dict(self)
-
-    def to_json(self) -> str:
-        """Convert the notification policy to a JSON string"""
-        return json.dumps(self.to_dict())
+    class Config:
+        extra = "allow"  # Allow extra fields in the JSON that aren't in our model
