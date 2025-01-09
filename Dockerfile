@@ -15,4 +15,4 @@ COPY . .
 RUN pip install -e .
 
 # Command to run the FastAPI application
-CMD ["uvicorn", "src.spacelift.webhook.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.spacelift.app:app", "--host", "0.0.0.0", "--port", "8000"]

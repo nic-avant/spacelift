@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request, HTTPException
 from temporalio.client import Client
-from spacelift.workflow.dependent_stacks_workflow import DependentStacksWorkflow
+from spacelift.workflow.routing_workflow import DependentStacksWorkflow
 import json
 import logging
 import uuid
-from spacelift.models import notification_policy
+from spacelift.models.notification_policy import NotificationPolicy
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ async def webhook_endpoint(request: Request):
     try:
         # Parse raw JSON payload
         raw_payload = await request.json()
-        payload = notification_policy(**raw_payload)
+        payload = NotificationPolicy(**raw_payload)
         logger.info(f"Received webhook payload: {json.dumps(payload, indent=2)}")
 
         # Extract stack id from payload

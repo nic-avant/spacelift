@@ -2,7 +2,12 @@ import asyncio
 import logging
 from temporalio.client import Client
 from temporalio.worker import Worker
-from spacelift.workflow.dependent_stacks_workflow import DependentStacksWorkflow, get_dependent_stacks_activity
+from temporalio import workflow
+
+# Pass the activities through the sandbox
+with workflow.unsafe.imports_passed_through():
+    from spacelift.workflow.routing_workflow import DependentStacksWorkflow
+    from spacelift.activities.get_dependent_stacks import get_dependent_stacks_activity
 
 async def main():
     # Configure logging
