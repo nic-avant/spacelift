@@ -10,7 +10,7 @@ with workflow.unsafe.imports_passed_through():
 @workflow.defn
 class DependentStacksWorkflow:
     @workflow.run
-    async def run(self, stack_id: str) -> List[Dict]:
+    async def run(self, input: InputParams) -> List[Dict]:
         """
         Workflow to retrieve and process dependent stacks for a given stack.
         
@@ -31,7 +31,7 @@ class DependentStacksWorkflow:
         # Execute the get_dependent_stacks activity
         dependent_stacks = await workflow.execute_activity(
             get_dependent_stacks_activity,
-            InputParams(stack_id=stack_id),
+            InputParams(stack_id=input.stack_id),
             retry_policy=retry_policy,
             start_to_close_timeout=timedelta(seconds=30)
         )
@@ -42,7 +42,7 @@ class DependentStacksWorkflow:
         # )
 
         # Optional: Add additional processing logic for dependent stacks
-        workflow.logger.info(f"Found {len(dependent_stacks)} dependent stacks for stack {stack_id}")
+        workflow.logger.info(f"Found {len(dependent_stacks)} dependent stacks for stack {input.stack_id}")
 
         # You can add further workflow logic here, such as:
         # - Triggering subsequent workflows for each dependent stack
