@@ -3,19 +3,16 @@
 Spacelift Stack Dependency Label Manager
 
 This script manages dependency labels for Spacelift stacks by analyzing the dependency graph
-and adding appropriate dependsOn labels. It uses the Spacelift GraphQL API's dependenciesFullGraph
-field, which returns dependencies in a specific order:
+and adding appropriate dependsOn labels. It uses the Spacelift GraphQL API to query both
+direct dependencies (dependsOn) and reverse dependencies (isDependedOnBy).
 
-1. First, all downstream dependencies (stacks that depend on us)
-2. Then our own stack
-3. Finally, all upstream dependencies (stacks that we depend on)
-
-Using this ordering, the script can identify which stacks are upstream dependencies
-(stacks that we depend on) and add the appropriate dependsOn labels.
+The script analyzes the dependency relationships to identify which stacks are upstream
+dependencies (stacks that we depend on) and adds the appropriate dependsOn labels.
 
 Example:
     If Stack B depends on Stack C, and Stack A depends on Stack B, then:
-    - Querying Stack B's dependencies returns: [A, B, C]
+    - Stack B's dependsOn field would show C
+    - Stack B's isDependedOnBy field would show A
     - The script will add 'dependsOn:C' to Stack B's labels
     - Stack A would have 'dependsOn:B' (when run for Stack A)
 
@@ -39,27 +36,22 @@ from gql import gql
 # For now, hardcoded to test with a specific stack
 # This will be replaced with a command line argument when the script is ready
 # to process multiple stacks
-TARGET_STACK = "glbdev-use2-eks-delhi"
+TARGET_STACK = "glbdev-use2-eks-delhi-airflow-02"
+
 def get_stack_dependencies(sl: Spacelift, stack_id: str) -> list:
     """
     Get upstream dependencies for a specific stack.
     
-    The Spacelift GraphQL API returns dependencies in a specific order in the dependenciesFullGraph field:
-    1. First, all downstream dependencies (stacks that depend on us)
-    2. Then our own stack
-    3. Finally, all upstream dependencies (stacks that we depend on)
+    The function queries both direct dependencies (dependsOn) and reverse dependencies
+    (isDependedOnBy) to build a complete picture of the dependency graph. The upstream
+    dependencies are those stacks that our target stack directly depends on.
     
     For example, if we have:
     - Stack A depends on Stack B
     - Stack B depends on Stack C
-    Then querying Stack B's dependencies would return: [A, B, C]
-    Where:
-    - A is downstream (depends on B)
-    - B is the current stack
-    - C is upstream (B depends on C)
-    
-    This ordering is key to determining which stacks are upstream dependencies that we should
-    add dependsOn labels for.
+    Then:
+    - Stack B's dependsOn would show C
+    - Stack B's isDependedOnBy would show A
     
     Args:
         sl: Spacelift client instance
@@ -68,7 +60,7 @@ def get_stack_dependencies(sl: Spacelift, stack_id: str) -> list:
     Returns:
         List of stack IDs that are upstream dependencies (stacks that we depend on)
     """
-    # Query both the stack's basic info and its full dependency graph
+    # Query both the stack's basic info and its dependencies
     query = gql("""
     fragment stackVendorConfig on Stack {
   vendorConfig {
@@ -286,32 +278,18 @@ query GetStack($id: ID!) {
     """)
     result = sl._execute(query, {"id": stack_id})
     
-    if result["stack"]["dependenciesFullGraph"]:
+    if result["stack"]:
         # Print the full response in debug mode
         print(f"\nFull dependency response: {result}")
         
-        # Get our stack name and ID for reference
-        our_stack_name = result["stack"]["name"]
-        our_stack_id = result["stack"]["id"]
+        # Extract direct dependencies from the dependsOn field
+        # These are our upstream dependencies (stacks we depend on)
+        upstream_deps = set()
         
-        # The dependenciesFullGraph field returns dependencies in a specific order:
-        # 1. Downstream dependencies (stacks that depend on us) come first
-        # 2. Our own stack appears in the middle
-        # 3. Upstream dependencies (stacks we depend on) come last
-        
-        # Find our position in the dependency list - this is the pivot point
-        # Everything before this is downstream, everything after is upstream
-        deps = result["stack"]["dependenciesFullGraph"]
-        our_index = next(i for i, dep in enumerate(deps) if dep["stack"]["id"] == our_stack_id)
-        
-        # Get all dependencies that come after our position in the list
-        # These are our upstream dependencies (the stacks we depend on)
-        # Skip our own stack ID since we might appear multiple times
-        upstream_deps = {
-            dep["stack"]["id"]
-            for dep in deps[our_index:]  # Take all deps from our position onwards
-            if dep["stack"]["id"] != our_stack_id  # Skip ourselves
-        }
+        if result["stack"].get("dependsOn"):
+            for dep in result["stack"]["dependsOn"]:
+                if dep["dependsOnStack"]:
+                    upstream_deps.add(dep["dependsOnStack"]["id"])
                 
         return sorted(list(upstream_deps))  # Sort for consistent output
     return []
@@ -325,10 +303,8 @@ def main():
     
     1. Getting all stacks to build a mapping of IDs to names
     2. Finding the target stack we want to analyze
-    3. Getting the stack's full dependency graph from Spacelift
-    4. Using the ordering in dependenciesFullGraph to identify upstream dependencies:
-       - Dependencies listed before our stack are downstream (they depend on us)
-       - Dependencies listed after our stack are upstream (we depend on them)
+    3. Getting the stack's dependencies from Spacelift
+    4. Identifying upstream dependencies from the dependsOn field
     5. Creating dependsOn labels for each upstream dependency
     6. Updating the stack's labels if they've changed
     
@@ -371,8 +347,6 @@ def main():
     print(f"Current labels: {current_labels}")
     
     # Get dependencies from Spacelift
-    # The get_stack_dependencies function will use the ordering in dependenciesFullGraph
-    # to determine which stacks are upstream dependencies
     print("\nFetching dependencies...")
     try:
         dependencies = get_stack_dependencies(sl, target_id)
