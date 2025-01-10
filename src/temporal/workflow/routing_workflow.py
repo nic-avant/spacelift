@@ -23,7 +23,7 @@ class DependentStacksWorkflow:
         Workflow to retrieve and process dependent stacks for a given stack.
 
         Args:
-            stack_id (str): The ID of the stack to find dependencies for.
+            input (InputParams): Object with `stack_id` attribute: The ID of the stack to find dependencies for.
 
         Returns:
             List[Dict]: A list of dependent stacks that can be processed.
