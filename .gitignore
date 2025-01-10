@@ -1,4 +1,5 @@
 .env
+.envrc
 #.python-version
 .idea
 .vscode
