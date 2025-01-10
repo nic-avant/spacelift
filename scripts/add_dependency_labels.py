@@ -70,18 +70,219 @@ def get_stack_dependencies(sl: Spacelift, stack_id: str) -> list:
     """
     # Query both the stack's basic info and its full dependency graph
     query = gql("""
-    query GetStackDependencies($id: ID!) {
-        stack(id: $id) {
-            id
-            name
-            dependenciesFullGraph {
-                stack {
-                    id
-                    name
-                }
-            }
-        }
+    fragment stackVendorConfig on Stack {
+  vendorConfig {
+    __typename
+    ... on StackConfigVendorPulumi {
+      loginURL
+      stackName
+      __typename
     }
+    ... on StackConfigVendorTerraform {
+      version
+      workspace
+      useSmartSanitization
+      externalStateAccessEnabled
+      workflowTool
+      __typename
+    }
+    ... on StackConfigVendorCloudFormation {
+      stackName
+      entryTemplateFile
+      templateBucket
+      region
+      __typename
+    }
+    ... on StackConfigVendorKubernetes {
+      namespace
+      kubectlVersion
+      kubernetesWorkflowTool
+      __typename
+    }
+    ... on StackConfigVendorAnsible {
+      playbook
+      __typename
+    }
+    ... on StackConfigVendorTerragrunt {
+      terraformVersion
+      terragruntVersion
+      tool
+      effectiveVersions {
+        effectiveTerragruntVersion
+        effectiveTerraformVersion
+        __typename
+      }
+      useRunAll
+      useSmartSanitization
+      __typename
+    }
+  }
+  __typename
+}
+
+query GetStack($id: ID!) {
+  stack(id: $id) {
+    administrative
+    id
+    apiHost
+    blocker {
+      id
+      state
+      type
+      __typename
+    }
+    branch
+    blueprint {
+      ulid
+      name
+      __typename
+    }
+    canWrite
+    isDisabled
+    isStateRollback
+    dependsOn {
+      id
+      stack {
+        id
+        name
+        space {
+          id
+          name
+          accessLevel
+          __typename
+        }
+        vendorConfig {
+          __typename
+        }
+        __typename
+      }
+      dependsOnStack {
+        id
+        name
+        space {
+          id
+          name
+          accessLevel
+          __typename
+        }
+        vendorConfig {
+          __typename
+        }
+        __typename
+      }
+      referenceCount
+      references {
+        id
+        inputName
+        outputName
+        triggerAlways
+        __typename
+      }
+      __typename
+    }
+    description
+    isDependedOnBy {
+      id
+      stack {
+        id
+        name
+        space {
+          id
+          name
+          accessLevel
+          __typename
+        }
+        vendorConfig {
+          __typename
+        }
+        __typename
+      }
+      dependsOnStack {
+        id
+        name
+        space {
+          id
+          name
+          accessLevel
+          __typename
+        }
+        vendorConfig {
+          __typename
+        }
+        __typename
+      }
+      referenceCount
+      references {
+        id
+        inputName
+        outputName
+        triggerAlways
+        __typename
+      }
+      __typename
+    }
+    effectiveTerraformVersion
+    labels
+    lockedAt
+    lockedBy
+    lockNote
+    managesStateFile
+    enableWellKnownSecretMasking
+    enableSensitiveOutputUpload
+    name
+    namespace
+    projectRoot
+    provider
+    repository
+    repositoryURL
+    runnerImage
+    spaceDetails {
+      id
+      name
+      accessLevel
+      __typename
+    }
+    starred
+    state
+    stateSetAt
+    trackedCommit {
+      url
+      hash
+      __typename
+    }
+    trackedBranchHead {
+      url
+      hash
+      __typename
+    }
+    trackedCommitSetBy
+    ...stackVendorConfig
+    vcsDetached
+    vcsIntegration {
+      id
+      name
+      provider
+      __typename
+    }
+    workerPool {
+      id
+      name
+      busyWorkers
+      pendingRuns
+      workers {
+        id
+        busy
+        drained
+        __typename
+      }
+      __typename
+    }
+    additionalProjectGlobs
+    __typename
+  }
+  tier
+  tierFeatures
+}
     """)
     result = sl._execute(query, {"id": stack_id})
     
