@@ -36,7 +36,7 @@ from gql import gql
 # For now, hardcoded to test with a specific stack
 # This will be replaced with a command line argument when the script is ready
 # to process multiple stacks
-TARGET_STACK = "glbdev-use2-eks-delhi-airflow-02"
+TARGET_STACK = "glbdev-use2-eks-delhi"
 
 def get_stack_dependencies(sl: Spacelift, stack_id: str) -> list:
     """
@@ -294,6 +294,97 @@ query GetStack($id: ID!) {
         return sorted(list(upstream_deps))  # Sort for consistent output
     return []
 
+def update_stack_labels(sl: Spacelift, stack_id: str, labels: list, current_stack: dict) -> bool:
+    """
+    Update a stack's labels using GraphQL mutation.
+    
+    Args:
+        sl: Spacelift client instance
+        stack_id: ID of the stack to update
+        labels: New list of labels to set
+        current_stack: Current stack data to preserve existing values
+        
+    Returns:
+        bool: True if update was successful, False otherwise
+    """
+    mutation = gql("""
+    mutation UpdateStackLabels($stack: ID!, $input: StackInput!) {
+        stackUpdate(
+            id: $stack,
+            input: $input
+        ) {
+            id
+            labels
+        }
+    }
+    """)
+    
+    # Get VCS integration ID from the vcsIntegration object
+    vcs_integration_id = current_stack.get("vcsIntegration", {}).get("id", "github-enterprise-default-integration")
+    
+    # Get worker pool ID from the workerPool object
+    worker_pool_id = current_stack.get("workerPool", {}).get("id")
+    
+    # Prepare input with all required fields based on the GUI network request
+    input_data = {
+        "additionalProjectGlobs": current_stack.get("additionalProjectGlobs", []),
+        "administrative": current_stack.get("administrative", False),
+        "afterApply": current_stack.get("afterApply", []),
+        "afterDestroy": current_stack.get("afterDestroy", []),
+        "afterInit": current_stack.get("afterInit", []),
+        "afterPerform": current_stack.get("afterPerform", []),
+        "afterPlan": current_stack.get("afterPlan", []),
+        "afterRun": current_stack.get("afterRun", []),
+        "autodeploy": current_stack.get("autodeploy", False),
+        "autoretry": current_stack.get("autoretry", False),
+        "beforeApply": current_stack.get("beforeApply", []),
+        "beforeDestroy": current_stack.get("beforeDestroy", []),
+        "beforeInit": current_stack.get("beforeInit", []),
+        "beforePerform": current_stack.get("beforePerform", []),
+        "beforePlan": current_stack.get("beforePlan", []),
+        "branch": current_stack.get("branch", ""),
+        "description": current_stack.get("description", ""),
+        "enableWellKnownSecretMasking": current_stack.get("enableWellKnownSecretMasking", False),
+        "githubActionDeploy": current_stack.get("githubActionDeploy", True),
+        "labels": labels,
+        "localPreviewEnabled": current_stack.get("localPreviewEnabled", True),
+        "name": current_stack.get("name", ""),
+        "namespace": current_stack.get("namespace", ""),
+        "projectRoot": current_stack.get("projectRoot"),
+        "protectFromDeletion": current_stack.get("protectFromDeletion", False),
+        "provider": current_stack.get("provider", ""),
+        "repository": current_stack.get("repository", ""),
+        "repositoryURL": current_stack.get("repositoryURL"),
+        "runnerImage": current_stack.get("runnerImage"),
+        "space": current_stack.get("space"),
+        "vcsIntegrationId": vcs_integration_id,
+        "workerPool": worker_pool_id,
+        "vendorConfig": {
+            "ansible": None,
+            "cloudFormation": None,
+            "kubernetes": None,
+            "pulumi": None,
+            "terraform": current_stack.get("vendorConfig") if current_stack.get("vendorConfig", {}).get("__typename") == "StackConfigVendorTerraform" else {
+                "version": "1.5.7",
+                "workspace": None,
+                "useSmartSanitization": False,
+                "externalStateAccessEnabled": False,
+                "workflowTool": "TERRAFORM_FOSS"
+            },
+            "terragrunt": None
+        }
+    }
+    
+    try:
+        result = sl._execute(mutation, {
+            "stack": stack_id,
+            "input": input_data
+        })
+        return bool(result.get("stackUpdate", {}).get("id"))
+    except Exception as e:
+        print(f"Failed to update labels: {e}")
+        return False
+
 def main():
     """
     Add dependency labels to target stack based on its upstream dependencies.
@@ -328,7 +419,37 @@ def main():
     stacks = sl.get_stacks(query_fields=[
         "id",
         "name",
-        "labels"
+        "labels",
+        "administrative",
+        "description",
+        "branch",
+        "repository",
+        "projectRoot",
+        "namespace",
+        "provider",
+        "space",
+        "vcsIntegration { id }",
+        "workerPool { id }",
+        "runnerImage",
+        "vendorConfig { __typename ... on StackConfigVendorTerraform { version workspace useSmartSanitization externalStateAccessEnabled workflowTool } }",
+        "additionalProjectGlobs",
+        "afterApply",
+        "afterDestroy",
+        "afterInit",
+        "afterPerform",
+        "afterPlan",
+        "afterRun",
+        "autodeploy",
+        "autoretry",
+        "beforeApply",
+        "beforeDestroy",
+        "beforeInit",
+        "beforePerform",
+        "beforePlan",
+        "enableWellKnownSecretMasking",
+        "githubActionDeploy",
+        "localPreviewEnabled",
+        "protectFromDeletion"
     ])
     
     print(f"\nFound {len(stacks)} total stacks")
@@ -387,11 +508,10 @@ def main():
         print(f"  Final labels would be: {new_labels}")
         
         if args.apply:
-            try:
-                result = sl.update_stack_labels(target_id, new_labels)
+            if update_stack_labels(sl, target_id, new_labels, target):
                 print(f"  ✓ Successfully updated labels")
-            except Exception as e:
-                print(f"  ✗ Failed to update labels: {e}")
+            else:
+                print(f"  ✗ Failed to update labels")
     else:
         print("\nNo changes needed - dependency labels are already correct")
     
