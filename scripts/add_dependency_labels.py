@@ -24,13 +24,15 @@ Options:
     --debug    Show debug information including API responses
 """
 
+import argparse
 import os
 import sys
-import argparse
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.spacelift.main import Spacelift
 from gql import gql
+from src.spacelift.main import Spacelift
+
 
 def get_stack_dependencies(sl: Spacelift, stack_id: str) -> list:
     """
@@ -271,20 +273,20 @@ query GetStack($id: ID!) {
 }
     """)
     result = sl._execute(query, {"id": stack_id})
-    
+
     if result["stack"]:
         # Print the full response in debug mode
         print(f"\nFull dependency response: {result}")
-        
+
         # Extract direct dependencies from the dependsOn field
         # These are our upstream dependencies (stacks we depend on)
         upstream_deps = set()
-        
+
         if result["stack"].get("dependsOn"):
             for dep in result["stack"]["dependsOn"]:
                 if dep["dependsOnStack"]:
                     upstream_deps.add(dep["dependsOnStack"]["id"])
-                
+
         return sorted(list(upstream_deps))  # Sort for consistent output
     return []
 
@@ -312,13 +314,13 @@ def update_stack_labels(sl: Spacelift, stack_id: str, labels: list, current_stac
         }
     }
     """)
-    
+
     # Get VCS integration ID from the vcsIntegration object
     vcs_integration_id = current_stack.get("vcsIntegration", {}).get("id", "github-enterprise-default-integration")
-    
+
     # Get worker pool ID from the workerPool object
     worker_pool_id = current_stack.get("workerPool", {}).get("id")
-    
+
     # Prepare input with all required fields based on the GUI network request
     input_data = {
         "additionalProjectGlobs": current_stack.get("additionalProjectGlobs", []),
@@ -368,7 +370,7 @@ def update_stack_labels(sl: Spacelift, stack_id: str, labels: list, current_stac
             "terragrunt": None
         }
     }
-    
+
     try:
         result = sl._execute(mutation, {
             "stack": stack_id,
@@ -404,7 +406,7 @@ def main():
     args = parser.parse_args()
 
     sl = Spacelift()
-    
+
     # First get basic stack info - we need this to:
     # 1. Find our target stack
     # 2. Get its current labels
@@ -445,20 +447,20 @@ def main():
         "localPreviewEnabled",
         "protectFromDeletion"
     ])
-    
+
     print(f"\nFound {len(stacks)} total stacks")
-    
+
     # Process each stack
     changes_needed = False
-    
+
     for stack in stacks:
         stack_id = stack["id"]
         stack_name = stack["name"]
         current_labels = stack.get("labels", [])
-        
+
         print(f"\nAnalyzing stack {stack_name} ({stack_id})")
         print(f"Current labels: {current_labels}")
-        
+
         # Get dependencies from Spacelift
         print("Fetching dependencies...")
         try:
@@ -470,11 +472,11 @@ def main():
             if args.debug:
                 raise
             continue
-        
+
         if not dependencies:
             print("No dependencies found")
             continue
-        
+
         # Print human-readable dependency information
         print(f"Found {len(dependencies)} dependencies:")
         for dep_id in dependencies:
@@ -484,14 +486,14 @@ def main():
                 print(f"  {dep_stack['name']} ({dep_id})")
             else:
                 print(f"  Unknown stack ({dep_id})")
-        
+
         # Create new dependsOn labels for each upstream dependency
         new_dependency_labels = [f"dependsOn:{dep_id}" for dep_id in dependencies]
-        
+
         # Preserve non-dependency labels while replacing all dependency labels
         existing_dep_labels = [l for l in current_labels if l.startswith("dependsOn:")]
         new_labels = [l for l in current_labels if not l.startswith("dependsOn:")] + new_dependency_labels
-        
+
         # Only update if the dependency labels have changed
         if set(existing_dep_labels) != set(new_dependency_labels):
             changes_needed = True
@@ -499,7 +501,7 @@ def main():
             print(f"  Current dependency labels: {existing_dep_labels}")
             print(f"  New dependency labels: {new_dependency_labels}")
             print(f"  Final labels would be: {new_labels}")
-            
+
             if args.apply:
                 if update_stack_labels(sl, stack_id, new_labels, stack):
                     print(f"  ✓ Successfully updated labels for {stack_name}")
@@ -507,7 +509,7 @@ def main():
                     print(f"  ✗ Failed to update labels for {stack_name}")
         else:
             print("No changes needed - dependency labels are already correct")
-    
+
     if not args.apply:
         if changes_needed:
             print("\nThis was a dry run. To apply these changes, run with --apply")

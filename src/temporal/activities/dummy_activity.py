@@ -1,5 +1,6 @@
 from temporalio import activity
 
+
 @activity.defn
 async def dummy_activity() -> list:
     """

@@ -1,5 +1,7 @@
 import asyncio
+
 from httpx import AsyncClient
+
 
 async def main():
     async with AsyncClient() as client:
