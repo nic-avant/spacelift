@@ -15,12 +15,25 @@ For detailed design specifications, please refer to our design documentation:
 ### Spacelift Client
 - Read operations for Spaces, Contexts, Stacks, and Blueprints
 - Create operations for Spaces, Contexts, and Stacks (from Blueprints)
+- Delete operations for Spaces, Contexts, and Stacks
 - Trigger a run for a Stack
+- Support for custom GraphQL queries via `_execute` method
+- Environment variable configuration support
+- JWT authentication handling
+
+### Mock Client for Testing
+- `MockSpacelift` class that mimics the real client's behavior
+- In-memory storage of spaces, stacks, and contexts
+- Perfect for unit testing without actual API calls
+- Implements most read/write operations
 
 ### Webhook and Workflow Management
-- FastAPI webhook to receive Spacelift notifications
-- Temporal workflow for managing stack execution
-- Integration between webhook and Temporal workflow
+- FastAPI webhook to receive and validate Spacelift notifications
+- Pydantic models for robust payload validation
+- Temporal workflow integration for managing stack execution
+- Automatic workflow triggering based on webhook events
+- UUID-based workflow tracking
+- Comprehensive error handling and logging
 
 ## Install
 ```bash
@@ -74,63 +87,37 @@ sl.trigger_run(stack_id)
 ```
 
 ### Webhook and Workflow Management
-The webhook and workflow management features are currently under development. Here's the current status:
+The webhook and workflow management system provides automated handling of Spacelift events:
 
-- FastAPI webhook (Phase 1 and 2 completed):
-  - Basic setup completed
-  - `/webhook` endpoint created to receive POST requests
-  - Enhanced payload processing and detailed logging implemented
-  - Improved error handling for invalid payloads
-  - Extraction of additional relevant information (e.g., branch, commit SHA, timestamp)
+#### Webhook Features
+- FastAPI-based webhook server with robust error handling
+- Pydantic models for payload validation and type safety
+- Automatic extraction of critical information:
+  - Run ID and Stack ID
+  - State changes and timestamps
+  - Branch and commit information
+  - Space ID and stack metadata
+- Seamless integration with Temporal workflows
+- Detailed logging for debugging and monitoring
 
-- Temporal workflow (Phase 3 in progress):
-  - Local development environment set up with:
-    - Temporal server running on port 7233
-    - Web UI accessible at http://localhost:8088
-    - PostgreSQL persistence layer
-  - Dummy workflow implemented for testing and demonstration
-  - New `/dummy-workflow` endpoint added to webhook
-  - Supports flexible payload processing and logging
+#### Temporal Workflow Integration
+- Automatic workflow triggering on webhook events
+- UUID-based workflow tracking
+- Configurable task queue ("spacelift-task-queue")
+- Development environment with:
+  - Temporal server (gRPC on port 7233)
+  - Web UI monitoring (http://localhost:8088)
+  - PostgreSQL persistence (port 5433)
+- Support for complex workflow patterns
+- Error handling and retry logic
 
-#### Postman Collection for Workflow Testing
-A comprehensive Postman collection is provided to test workflow execution:
+#### Running the stack
 
-##### Collection Details
-- **Location**: `postman/Spacelift_Workflow_Collection.json`
-- **Test Scenarios**:
-  1. Dummy Workflow - Basic Test
-     * Simple payload testing
-     * Validates basic workflow execution
-  2. Dummy Workflow - Complex Payload
-     * Nested JSON structure
-     * Tests workflow handling of complex data
-  3. Spacelift Webhook - Sample Payload
-     * Simulates actual Spacelift webhook event
-     * Validates webhook integration
+`docker compose up --build -d` will bring up all the containers for temporal and the fastapi app
 
-##### Using the Postman Collection
-1. Install Postman (if not already installed)
-2. Import `Spacelift_Workflow_Collection.json`
-3. Ensure local server is running:
-   ```bash
-   poetry run python src/spacelift/webhook/app.py
-   ```
-4. Execute collection requests to test workflow endpoints
+The webhook is at `http://0.0.0.0:8000/webhook`. You can send POST requests to `http://0.0.0.0:8000/webhook` with Spacelift payload data.
 
-#### Running the webhook server
-To run the webhook server:
-
-1. Ensure you have installed all dependencies: `poetry install`
-2. Run the server: `poetry run python src/spacelift/webhook/app.py`
-
-The server will start on `http://0.0.0.0:8000`. You can send POST requests to `http://0.0.0.0:8000/webhook` with Spacelift payload data.
-
-#### Running the Temporal server
-To run the Temporal development environment:
-
-1. Ensure Docker is running
-2. Start the services: `docker-compose up`
-3. Access the Web UI at http://localhost:8088
+Access the Temporal Web UI at http://localhost:8088
 
 The Temporal server will be available at:
 - gRPC: `localhost:7233` (for worker/client connections)
@@ -148,11 +135,6 @@ The webhook now processes and logs the following information from the Spacelift 
 - Additional information (space ID, stack name, run type)
 
 (Detailed usage instructions for the Temporal workflow will be added as it is implemented)
-
-#### Next Steps
-- Implement Temporal workflow triggering
-- Add unit tests for the webhook and payload processing
-- Implement more detailed validation for incoming payloads
 
 ## Environment Variables
 The `Spacelift` object can also infer its parameters from the following environment variables:
@@ -196,12 +178,3 @@ poetry publish
 ```bash
 poetry run pytest
 ```
-
-### Running the webhook server
-```bash
-poetry run python src/spacelift/webhook/app.py
-```
-
-### Running the Temporal worker
-```bash
-poetry run python src/spacelift/temporal_worker.py
