@@ -42,7 +42,10 @@ services:
       - DYNAMIC_CONFIG_FILE_PATH=config/dynamicconfig/development-sql.yaml
       - ENABLE_ES=true
       - ES_SEEDS=elasticsearch
-      - ES_VERSION=v7
+      - ES_VERSION=v7      
+      - SPACELIFT_BASE_URL=${SPACELIFT_BASE_URL}
+      - SPACELIFT_KEY_ID=${SPACELIFT_KEY_ID}
+      - SPACELIFT_KEY_SECRET=${SPACELIFT_KEY_SECRET}
     image: temporalio/auto-setup:${TEMPORAL_VERSION}
     networks:
       - temporal-network
@@ -105,7 +108,10 @@ services:
       - temporal
     environment:
       - TEMPORAL_ADDRESS=temporal:7233
-    command: python -m src.spacelift.temporal_worker
+      - SPACELIFT_BASE_URL=${SPACELIFT_BASE_URL}
+      - SPACELIFT_KEY_ID=${SPACELIFT_KEY_ID}
+      - SPACELIFT_KEY_SECRET=${SPACELIFT_KEY_SECRET}
+    command: python -m src.temporal.temporal_worker
 
 networks:
   temporal-network:
