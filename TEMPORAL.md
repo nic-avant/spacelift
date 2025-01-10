@@ -25,32 +25,40 @@ This project uses Temporal for robust workflow management, specifically for hand
 
 ### Workflow Types in This Project
 
-1. **Spacelift Webhook Workflow**
-   - Located in `src/spacelift/workflow/spacelift_webhook_workflow.py`
-   - Handles webhook events from Spacelift
-   - Supports `triggered`, `completed`, and `failed` event types
+1. **Dependent Stacks Workflow**
+   - Located in `src/temporal/workflow/routing_workflow.py`
+   - Manages the routing and execution of dependent Spacelift stacks
+   - Implemented in the `DependentStacksWorkflow` class
 
-2. **Stack Execution Workflow**
-   - Located in `src/spacelift/workflow/stack_execution_workflow.py`
-   - Manages the execution lifecycle of Spacelift stacks
+### Activities
+
+1. **Get Dependent Stacks Activity**
+   - Located in `src/temporal/activities/get_dependent_stacks.py`
+   - Retrieves dependent stacks information
+   - Implemented in the `get_dependent_stacks_activity` function
 
 ### Temporal Worker
 
-The Temporal worker is implemented in `src/spacelift/temporal_worker.py`. It:
-- Registers workflows and activities
-- Connects to the Temporal server
-- Processes and executes registered workflows
+The Temporal worker is implemented in `src/temporal/temporal_worker.py`. It:
+- Registers the DependentStacksWorkflow and get_dependent_stacks_activity
+- Connects to the Temporal server using the configured TEMPORAL_URL
+- Processes tasks on the "spacelift-task-queue" task queue
 
 ## Configuration and Setup
 
 ### Dependencies
-- `temporalio` Python library
-- Temporal server connection details
+- `temporalio` Python library for Python SDK integration
+- Temporal server running and accessible
 
 ### Environment Configuration
-- Configure Temporal server endpoint
-- Set up authentication credentials
-- Define retry policies and timeouts
+- `TEMPORAL_URL`: Temporal server endpoint (defaults to "temporal:7233")
+- Task queue configured as "spacelift-task-queue"
+
+### Testing Connection
+The project includes a test script (`src/temporal/temporal_test.py`) that:
+- Verifies connection to the Temporal server
+- Lists available namespaces
+- Provides basic logging of connection status
 
 ## Best Practices
 
