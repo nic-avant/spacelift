@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 
 from temporalio import workflow
 from temporalio.client import Client
@@ -21,9 +22,12 @@ async def main():
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
 
+    # Get Temporal connection URL from environment variable with default
+    temporal_url = os.getenv("TEMPORAL_URL", "temporal:7233")
+
     # Connect to Temporal server
-    client = await Client.connect("localhost:7233")
-    logger.info("Connected to Temporal server")
+    client = await Client.connect(temporal_url)
+    logger.info(f"Connected to Temporal server at {temporal_url}")
 
     # Create and run the worker
     worker = Worker(

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import uuid
 
 from fastapi import (
@@ -68,17 +69,19 @@ async def webhook_endpoint(
         wf_id = str(uuid.uuid4())
 
         try:
-            # Initialize Temporal client
+            # Initialize Temporal client using environment variable
             logger.info(
                 "Attempting to connect to Temporal server"
             )
+            temporal_url = os.getenv("TEMPORAL_URL", "temporal:7233")
+
             client = (
                 await Client.connect(
-                    "temporal:7233"
+                    temporal_url
                 )
             )
             logger.info(
-                "Successfully connected to Temporal server"
+                f"Successfully connected to Temporal server at {temporal_url}"
             )
 
             # Start the Temporal workflow with the full payload
