@@ -1,11 +1,12 @@
 import os
+from logging import getLogger
 from typing import Optional
 
-from gql import gql, Client
+from gql import Client, gql
+from gql.transport.requests import (
+    RequestsHTTPTransport,
+)
 from graphql import DocumentNode
-from gql.transport.requests import RequestsHTTPTransport
-
-from logging import getLogger
 
 log = getLogger(__name__)
 

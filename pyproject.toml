@@ -13,10 +13,10 @@ packages = [{include = "spacelift", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-gql = {extras = ["requests"], version = "^3.4.1"}
-fastapi = "^0.95.0"
-uvicorn = "^0.21.1"
-temporalio = "^1.1.0"
+gql = {extras = ["requests"], version = "^3.5.0"}
+fastapi = "0.95.0"
+uvicorn = "0.21.0"
+temporalio = "1.1.0"
 ipython = "^8.31.0"
 
 [build-system]
