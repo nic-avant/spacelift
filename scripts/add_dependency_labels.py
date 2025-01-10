@@ -32,12 +32,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.spacelift.main import Spacelift
 from gql import gql
 
-# TODO: Replace with command line argument
-# For now, hardcoded to test with a specific stack
-# This will be replaced with a command line argument when the script is ready
-# to process multiple stacks
-TARGET_STACK = "glbdev-use2-eks-delhi"
-
 def get_stack_dependencies(sl: Spacelift, stack_id: str) -> list:
     """
     Get upstream dependencies for a specific stack.
@@ -454,69 +448,71 @@ def main():
     
     print(f"\nFound {len(stacks)} total stacks")
     
-    # Find our target stack by name
-    target_stacks = [s for s in stacks if s["name"] == TARGET_STACK]
-    if not target_stacks:
-        print(f"Stack '{TARGET_STACK}' not found!")
-        return
+    # Process each stack
+    changes_needed = False
     
-    target = target_stacks[0]
-    target_id = target["id"]
-    current_labels = target.get("labels", [])
-    
-    print(f"\nAnalyzing stack {TARGET_STACK} ({target_id})")
-    print(f"Current labels: {current_labels}")
-    
-    # Get dependencies from Spacelift
-    print("\nFetching dependencies...")
-    try:
-        dependencies = get_stack_dependencies(sl, target_id)
-        if args.debug:
-            print("Raw dependencies response:", dependencies)
-    except Exception as e:
-        print(f"Error fetching dependencies: {e}")
-        if args.debug:
-            raise
-        return
-    
-    if not dependencies:
-        print("No dependencies found")
-        return
-    
-    # Print human-readable dependency information
-    print(f"\nFound {len(dependencies)} dependencies:")
-    for dep_id in dependencies:
-        # Map dependency IDs to stack names for better readability
-        dep_stack = next((s for s in stacks if s["id"] == dep_id), None)
-        if dep_stack:
-            print(f"  {dep_stack['name']} ({dep_id})")
-        else:
-            print(f"  Unknown stack ({dep_id})")
-    
-    # Create new dependsOn labels for each upstream dependency
-    new_dependency_labels = [f"dependsOn:{dep_id}" for dep_id in dependencies]
-    
-    # Preserve non-dependency labels while replacing all dependency labels
-    existing_dep_labels = [l for l in current_labels if l.startswith("dependsOn:")]
-    new_labels = [l for l in current_labels if not l.startswith("dependsOn:")] + new_dependency_labels
-    
-    # Only update if the dependency labels have changed
-    if set(existing_dep_labels) != set(new_dependency_labels):
-        print("\nChanges needed:")
-        print(f"  Current dependency labels: {existing_dep_labels}")
-        print(f"  New dependency labels: {new_dependency_labels}")
-        print(f"  Final labels would be: {new_labels}")
+    for stack in stacks:
+        stack_id = stack["id"]
+        stack_name = stack["name"]
+        current_labels = stack.get("labels", [])
         
-        if args.apply:
-            if update_stack_labels(sl, target_id, new_labels, target):
-                print(f"  ✓ Successfully updated labels")
+        print(f"\nAnalyzing stack {stack_name} ({stack_id})")
+        print(f"Current labels: {current_labels}")
+        
+        # Get dependencies from Spacelift
+        print("Fetching dependencies...")
+        try:
+            dependencies = get_stack_dependencies(sl, stack_id)
+            if args.debug:
+                print("Raw dependencies response:", dependencies)
+        except Exception as e:
+            print(f"Error fetching dependencies: {e}")
+            if args.debug:
+                raise
+            continue
+        
+        if not dependencies:
+            print("No dependencies found")
+            continue
+        
+        # Print human-readable dependency information
+        print(f"Found {len(dependencies)} dependencies:")
+        for dep_id in dependencies:
+            # Map dependency IDs to stack names for better readability
+            dep_stack = next((s for s in stacks if s["id"] == dep_id), None)
+            if dep_stack:
+                print(f"  {dep_stack['name']} ({dep_id})")
             else:
-                print(f"  ✗ Failed to update labels")
-    else:
-        print("\nNo changes needed - dependency labels are already correct")
+                print(f"  Unknown stack ({dep_id})")
+        
+        # Create new dependsOn labels for each upstream dependency
+        new_dependency_labels = [f"dependsOn:{dep_id}" for dep_id in dependencies]
+        
+        # Preserve non-dependency labels while replacing all dependency labels
+        existing_dep_labels = [l for l in current_labels if l.startswith("dependsOn:")]
+        new_labels = [l for l in current_labels if not l.startswith("dependsOn:")] + new_dependency_labels
+        
+        # Only update if the dependency labels have changed
+        if set(existing_dep_labels) != set(new_dependency_labels):
+            changes_needed = True
+            print("\nChanges needed:")
+            print(f"  Current dependency labels: {existing_dep_labels}")
+            print(f"  New dependency labels: {new_dependency_labels}")
+            print(f"  Final labels would be: {new_labels}")
+            
+            if args.apply:
+                if update_stack_labels(sl, stack_id, new_labels, stack):
+                    print(f"  ✓ Successfully updated labels for {stack_name}")
+                else:
+                    print(f"  ✗ Failed to update labels for {stack_name}")
+        else:
+            print("No changes needed - dependency labels are already correct")
     
     if not args.apply:
-        print("\nThis was a dry run. To apply these changes, run with --apply")
+        if changes_needed:
+            print("\nThis was a dry run. To apply these changes, run with --apply")
+        else:
+            print("\nNo changes needed for any stacks")
 
 if __name__ == "__main__":
     main()
