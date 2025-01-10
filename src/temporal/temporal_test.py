@@ -1,6 +1,12 @@
-import os
-from temporalio.client import Client
 import asyncio
+import logging
+import os
+
+from temporalio.client import Client
+
+
+logger = logging.getLogger(__name__)
+
 
 async def main():
     # Get Temporal connection URL from environment variable with default
@@ -12,9 +18,11 @@ async def main():
     # Get a list of all namespaces
     namespaces = await client.get_worker_task_reachability()
 
-    print("Connected to Temporal server successfully!")
-    print(f"Connected to: {temporal_url}")
-    print(f"Available namespaces: {', '.join(namespaces.keys())}")
+    logger.info("Connected to Temporal server successfully!")
+    logger.info(f"Connected to: {temporal_url}")
+    logger.info(f"Available namespaces: {', '.join(namespaces.keys())}")
 
 if __name__ == "__main__":
+    # Set up basic logging configuration
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(main())

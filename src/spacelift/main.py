@@ -1,3 +1,4 @@
+import logging
 import os
 from logging import getLogger
 from typing import Optional
@@ -57,13 +58,13 @@ class Spacelift:
         return self.client.execute(query, variable_values=variable_values)
 
     def _get_jwt(self):
-        query_text = f"""
-        mutation GetSpaceliftToken($keyId: ID!, $keySecret: String!) {{
-            apiKeyUser(id: $keyId, secret: $keySecret) {{
+        query_text = """
+        mutation GetSpaceliftToken($keyId: ID!, $keySecret: String!) {
+            apiKeyUser(id: $keyId, secret: $keySecret) {
                 id
                 jwt
-            }}
-        }}
+            }
+        }
         """
         variable_values = {
             "keyId": self.key_id,
@@ -157,17 +158,17 @@ class Spacelift:
         if envvars is None:
             envvars = []
 
-        query_text = f"""
-        mutation ContextCreateV2($name: String!, $envvars: [ConfigInput!], $space: ID, $description: String, $labels: [String!]) {{
-            contextCreateV2(input: {{name: $name, configAttachments: $envvars, space: $space, description: $description, labels: $labels }}) {{
+        query_text = """
+        mutation ContextCreateV2($name: String!, $envvars: [ConfigInput!], $space: ID, $description: String, $labels: [String!]) {
+            contextCreateV2(input: {name: $name, configAttachments: $envvars, space: $space, description: $description, labels: $labels }) {
                 id
                 name
-                config {{
+                config {
                     id
                     value
-                }}
-            }}
-        }}
+                }
+            }
+        }
         """
 
         variable_values = {
@@ -184,12 +185,12 @@ class Spacelift:
         return result
 
     def delete_context(self, context_id: str):
-        query_text = f"""
-        mutation ContextDelete($id: ID!) {{
-            contextDelete(id: $id) {{
+        query_text = """
+        mutation ContextDelete($id: ID!) {
+            contextDelete(id: $id) {
                 id
-            }}
-        }}
+            }
+        }
         """
         variable_values = {
             "id": context_id,
@@ -210,15 +211,15 @@ class Spacelift:
         if labels is None:
             labels = []
 
-        query_text = f"""
-        mutation SpaceCreate($name: String!, $parent: ID!, $description: String!, $labels: [String!], $inheritEntities: Boolean!) {{
-            spaceCreate(input: {{name: $name, parentSpace: $parent, description: $description, labels: $labels, inheritEntities: $inheritEntities}}) {{
+        query_text = """
+        mutation SpaceCreate($name: String!, $parent: ID!, $description: String!, $labels: [String!], $inheritEntities: Boolean!) {
+            spaceCreate(input: {name: $name, parentSpace: $parent, description: $description, labels: $labels, inheritEntities: $inheritEntities}) {
                 id
                 name
                 description
                 labels
-            }}
-        }}
+            }
+        }
         """
         variable_values = {
             "name": space_name,
@@ -233,12 +234,12 @@ class Spacelift:
         return result
 
     def delete_space(self, space_id: str):
-        query_text = f"""
-        mutation SpaceDelete($id: ID!) {{
-            spaceDelete(space: $id) {{
+        query_text = """
+        mutation SpaceDelete($id: ID!) {
+            spaceDelete(space: $id) {
                 id
-            }}
-        }}
+            }
+        }
         """
         variable_values = {
             "id": space_id,
@@ -249,12 +250,12 @@ class Spacelift:
         return result
 
     def delete_stack(self, stack_id: str):
-        query_text = f"""
-        mutation DeleteStack($id: ID!) {{
-            stackDelete(id: $id) {{
+        query_text = """
+        mutation DeleteStack($id: ID!) {
+            stackDelete(id: $id) {
                 id
-            }}
-        }}
+            }
+        }
         """
         variable_values = {
             "id": stack_id,
@@ -332,13 +333,13 @@ class Spacelift:
     def create_stack_from_blueprint(
         self, blueprint_id: str, inputs: list[dict]
     ) -> dict:
-        query_text = f"""
-        mutation BlueprintCreateStack($id: ID!, $input: BlueprintStackCreateInput!) {{
-            blueprintCreateStack(id: $id, input: $input) {{
+        query_text = """
+        mutation BlueprintCreateStack($id: ID!, $input: BlueprintStackCreateInput!) {
+            blueprintCreateStack(id: $id, input: $input) {
                 stackID
                 runID
-            }}
-        }}
+            }
+        }
         """
         variable_values = {
             "id": blueprint_id,
@@ -354,12 +355,12 @@ class Spacelift:
 def space_context_test():
     sl = Spacelift(os.environ.get("SPACELIFT_BASE_URL"))
     # result = sl.get_stacks()
-    # print(result)
+    # log.info(f"get_stacks result: {result}")
     # result = sl.get_stack_by_id(stack_id="mcr-tf", query_fields=["id", "name"])
-    # print(result)
+    # log.info(f"get_stack_by_id result: {result}")
     #
     # result = sl.get_stacks(["id", "name", "branch", "namespace", "repository", "state"])
-    # print(result)
+    # log.info(f"get_stacks result: {result}")
 
     # result = sl.get_context_by_id(context_id="customer-a", query_fields=["id", "name", "config { id value writeOnly }"])
     LIBRARY_TEST_NAME = "library-test-customer-a"
@@ -367,14 +368,14 @@ def space_context_test():
     result = sl.get_contexts(
         query_fields=["id", "name", "config { id value writeOnly }"]
     )
-    print(result[0])
+    log.info(f"First context: {result[0]}")
 
     try:
-        print('deleting context_id="abc"')
+        log.info('Attempting to delete context_id="abc"')
         result = sl.delete_context(context_id="abc")
-        print(f"delete_context(context_id='abc') result: {result}")
+        log.info(f"delete_context(context_id='abc') result: {result}")
     except Exception as e:
-        print(f"exception: {type(e)}:{e}")
+        log.error(f"Exception: {type(e)}:{e}")
 
     try:
         result = sl.create_context(
@@ -395,23 +396,23 @@ def space_context_test():
                 },
             ],
         )
-        print(f"create_context result: {result}")
+        log.info(f"create_context result: {result}")
 
     except Exception as e:
-        print(f"create_context exception: {type(e)}:{e}")
+        log.error(f"create_context exception: {type(e)}:{e}")
         result = sl.delete_context(context_id=LIBRARY_TEST_NAME)
-        print(f"delete_context result: {result}")
+        log.info(f"delete_context result: {result}")
 
     spaces = sl.get_spaces(query_fields=["id", "name", "description", "parentSpace"])
-    print(spaces)
+    log.info(f"Spaces: {spaces}")
 
     delete_spaces = [space for space in spaces if space["name"] == LIBRARY_TEST_NAME]
-    print(delete_spaces)
+    log.info(f"Spaces to delete: {delete_spaces}")
 
     for space in delete_spaces:
-        print(space["id"])
+        log.info(f"Deleting space: {space['id']}")
         result = sl.delete_space(space_id=space["id"])
-        print(f"delete_space result: {result}")
+        log.info(f"delete_space result: {result}")
 
     if not delete_spaces:
         result = sl.create_space(
@@ -421,7 +422,7 @@ def space_context_test():
             labels=["customer", "a"],
         )
 
-        print(f"create_space result: {result}")
+        log.info(f"create_space result: {result}")
 
 
 def blueprint_test():
@@ -431,7 +432,7 @@ def blueprint_test():
     result = sl.get_blueprint_by_id(
         blueprint_id=bp_id, query_fields=["id", "name", "inputs { id name type }"]
     )
-    print(result)
+    log.info(f"Blueprint details: {result}")
 
     inputs = [
         {
@@ -450,10 +451,13 @@ def blueprint_test():
         {"id": "space_id", "value": "svc_abcd-space-01HJP3651BQT2GY2EQSG6KVWDB"},
     ]
     result = sl.create_stack_from_blueprint(blueprint_id=bp_id, inputs=inputs)
-    print(result)
+    log.info(f"Create stack result: {result}")
 
 
 def main():
+    # Configure basic logging
+    logging.basicConfig(level=logging.INFO)
+    
     # space_context_test()
     blueprint_test()
 
