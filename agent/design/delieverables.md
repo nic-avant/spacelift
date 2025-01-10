@@ -1,29 +1,60 @@
 # Project Deliverables
 
-## Spacelift Client Library
-- Read operations for:
-  - Spaces
-  - Contexts
-  - Stacks
-  - Blueprints
-- Create operations for:
-  - Spaces
-  - Contexts
-  - Stacks (from Blueprints)
-- Stack run triggering functionality
+## Infrastructure Change Management
+- Infrastructure Stack Operations
+  - Stack state monitoring
+  - Change detection
+  - Execution control
+  - State validation
+- Infrastructure Client Integration
+  - Spacelift API wrapper
+  - GraphQL query optimization
+  - Error handling
+  - Mock testing support
 
-## Webhook and Workflow Management System
-- FastAPI webhook endpoint
-  - Receives Spacelift notifications
-  - Processes and logs payload information
-- Temporal workflow management
-  - Integration between webhook and workflow execution
-  - Local development environment setup
-  - Workflow worker implementation
+## Stack Dependency Management
+- Dependency Resolution
+  - Label-based tracking
+  - Stack relationship mapping
+  - Circular dependency detection
+  - Change order determination
+- Change Propagation
+  - Dependent stack identification
+  - Safety validation
+  - Execution sequencing
+  - State consistency
+
+## Change Workflow System
+- Temporal Orchestration
+  - Change sequence management
+  - Retry policies
+  - Timeout handling
+  - Error recovery
+- Integration Components
+  - Event handling
+  - Change routing
+  - State persistence
+  - Audit logging
+- Development Environment
+  - Local testing setup
+  - Mock infrastructure
+  - Workflow monitoring
+
+## Infrastructure Event Processing
+- Webhook Integration
+  - Event reception
+  - Payload validation
+  - Basic error handling
+- Change Tracking
+  - State transitions
+  - Execution progress
+  - Dependency updates
 
 ## Key Milestones
-- [x] Spacelift Client basic functionality
-- [x] Webhook endpoint implementation
-- [ ] Temporal workflow integration
-- [ ] Advanced payload validation
-- [ ] Comprehensive unit testing
+- [x] Infrastructure client integration
+- [x] Webhook endpoint setup
+- [x] Basic workflow orchestration
+- [ ] Complete dependency management
+- [ ] Advanced change control
+- [ ] Comprehensive testing
+- [ ] Production deployment guide

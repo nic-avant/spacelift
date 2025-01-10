@@ -2,33 +2,53 @@
 
 ## Core Technologies
 - **Language**: Python 3.10+
-- **Dependency Management**: Poetry
-- **API Interaction**: GraphQL (via `gql` library)
+- **Infrastructure Management**: Spacelift.io
 - **Workflow Management**: Temporal
 - **Web Framework**: FastAPI
-- **Webhook Handling**: FastAPI
+- **Dependency Management**: Poetry
 
-## Key Libraries
-- `gql`: GraphQL client for Spacelift API interactions
-- `temporalio`: Workflow orchestration
-- `fastapi`: Web framework for webhook endpoints
-- `pydantic`: Data validation
-- `requests`: HTTP client library
+## Key Libraries and Integrations
+- **Infrastructure Management**
+  - Spacelift GraphQL API (via `gql`)
+  - Infrastructure state tracking
+  - Stack dependency resolution
+
+- **Change Management**
+  - `temporalio`: Infrastructure change workflow orchestration
+  - `fastapi`: Change event webhooks
+  - `pydantic`: Data validation
+
+- **Development Tools**
+  - `pytest`: Testing infrastructure
+  - `mypy`: Type checking
+  - `flake8`, `black`: Code quality
+  - `direnv`: Environment management
 
 ## Project Structure
-- `src/spacelift/`: Main source code directory
-  - `main.py`: Core Spacelift API client
-  - `webhook/`: Webhook handling
-  - `workflow/`: Temporal workflow implementations
-  - `tests/`: Project test suite
+- `src/spacelift/`: Infrastructure client and models
+  - `main.py`: Spacelift API client wrapper
+  - `app.py`: FastAPI application
+  - `models/`: Data schemas
+  - `mock_spacelift.py`: Test infrastructure mocks
 
-## Development Tools
-- Type Checking: mypy
-- Testing: pytest
-- Linting: flake8, black
-- Environment Management: direnv, .env support
+- `src/temporal/`: Change workflow management
+  - `activities/`: Infrastructure operations
+    - `get_dependent_stacks.py`: Dependency resolution
+  - `workflow/`: Change orchestration
+    - `routing_workflow.py`: Change propagation
+  - `temporal_worker.py`: Worker process
+  - `temporal_test.py`: Workflow testing
 
-## Deployment Considerations
-- Docker support via Dockerfile
-- Environment configuration via .env and .envrc
-- Supports local and containerized deployments
+- `tests/`: Test suite
+
+## Development Environment
+- Local Temporal server via Docker
+- PostgreSQL for workflow state
+- Web UI for workflow monitoring
+- Environment configuration via .env
+
+## Deployment Architecture
+- Docker containerization
+- Environment-specific configurations
+- Scalable worker processes
+- Persistent workflow state

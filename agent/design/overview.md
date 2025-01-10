@@ -1,37 +1,43 @@
-# Project Overview: Spacelift Client and Workflow Manager
+# Project Overview: Infrastructure Change Handler
 
 ## Purpose
-The Spacelift Client and Workflow Manager is a Python library and system designed to streamline interactions with the Spacelift.io platform, providing robust API integration and workflow management capabilities.
+The Infrastructure Change Handler is designed to manage and coordinate infrastructure changes across multiple stacks, ensuring proper dependency management and controlled execution of infrastructure updates. It leverages Spacelift.io for infrastructure management while adding sophisticated dependency handling and workflow orchestration.
 
 ## Core Components
-1. **Spacelift Client**
-   - Provides a pythonic interface to Spacelift.io API
-   - Supports read and create operations for various Spacelift resources
-   - Enables programmatic stack management and run triggering
+1. **Infrastructure Change Management**
+   - Tracks dependencies between infrastructure stacks
+   - Coordinates change propagation across dependent stacks
+   - Ensures proper order of infrastructure updates
+   - Manages infrastructure state transitions
 
-2. **Webhook Management**
-   - FastAPI-based webhook receiver
-   - Processes Spacelift notifications
-   - Extracts and logs detailed payload information
+2. **Stack Dependency Management**
+   - Identifies and tracks infrastructure dependencies
+   - Label-based dependency resolution
+   - Prevents conflicting infrastructure changes
+   - Ensures infrastructure consistency
 
 3. **Workflow Orchestration**
-   - Temporal workflow integration
-   - Manages stack execution workflows
-   - Provides a scalable and reliable execution environment
+   - Temporal workflow integration for reliable execution
+   - Manages infrastructure change sequences
+   - Handles rollbacks and error scenarios
+   - Provides audit trail of infrastructure changes
 
 ## Key Features
-- Flexible API key authentication
-- Comprehensive resource querying
-- Detailed payload processing
-- Local development environment support
-- Mocked testing capabilities
+- Infrastructure dependency tracking
+- Change propagation control
+- Stack execution orchestration
+- Local development environment
+- Comprehensive testing support
 
 ## Development Philosophy
-- Modular and extensible design
-- Focus on developer experience
+- Infrastructure as Code principles
+- Safe and controlled changes
 - Robust error handling
-- Comprehensive documentation
+- Comprehensive audit trail
+- Type safety and validation
 
 ## Current Development Status
-- Phase 1-2: Spacelift Client and Webhook - Completed
-- Phase 3: Temporal Workflow - In Progress
+- Phase 1: Infrastructure Client Integration - Completed
+- Phase 2: Webhook Integration - Completed
+- Phase 3: Stack Dependency Management - In Progress
+- Phase 4: Advanced Change Control Features - Planned
