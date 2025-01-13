@@ -271,7 +271,7 @@ class Spacelift:
 
         query_text = f"""
         mutation RunTrigger($stack: ID!) {{
-            runTrigger(stack: $stack, runType: PROPOSED) {{
+            runTrigger(stack: $stack, runType: TRACKED) {{
                 {" ".join(query_fields)}
             }}
         }}

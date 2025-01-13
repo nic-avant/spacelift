@@ -67,12 +67,15 @@ class DependentStacksWorkflow:
             stack_id = stack["id"]
             workflow.logger.info(f"Starting RunStackWorkflow for stack {stack_id}")
             
-            result = await workflow.start_child_workflow(
+            # Start the child workflow and await its completion
+            handle = await workflow.start_child_workflow(
                 RunStackWorkflow,
                 RunStackInput(stack_id=stack_id),
                 id=f"run-stack-{stack_id}",
                 retry_policy=retry_policy,
             )
+            # Await the actual result from the child workflow
+            result = await handle
             run_results.append(result)
             workflow.logger.info(f"Successfully started run for stack {stack_id}")
 

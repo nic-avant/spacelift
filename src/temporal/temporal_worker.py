@@ -11,8 +11,12 @@ with workflow.unsafe.imports_passed_through():
     from temporal.activities.get_dependent_stacks import (
         get_dependent_stacks_activity,
     )
+    from temporal.activities.run_stack import (
+        run_stack,
+    )
     from temporal.workflow.routing_workflow import (
         DependentStacksWorkflow,
+        RunStackWorkflow
     )
 
 
@@ -34,9 +38,10 @@ async def main():
         client,
         task_queue="spacelift-task-queue",
         workflows=[
-            DependentStacksWorkflow
+            DependentStacksWorkflow,
+            RunStackWorkflow
         ],
-        activities=[get_dependent_stacks_activity]
+        activities=[get_dependent_stacks_activity, run_stack]
     )
 
     try:
