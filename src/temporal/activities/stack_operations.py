@@ -14,10 +14,10 @@ class StackExecutionInput:
 async def trigger_stack_run(input: StackExecutionInput) -> dict:
     """
     Temporal activity to trigger a run on a Spacelift stack.
-    
+
     Args:
         input (StackExecutionInput): Contains the stack_id to trigger a run for.
-        
+
     Returns:
         dict: Information about the triggered run including id, branch, and state.
     """

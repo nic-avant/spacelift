@@ -290,13 +290,13 @@ class Spacelift:
         newline = "\n"
         query_text = f"""
         query SearchBlueprints($input: SearchInput!) {{
-         searchBlueprints(input: $input) {{ 
+         searchBlueprints(input: $input) {{
           edges {{
-           node {{ 
+           node {{
             {newline.join(query_fields)}
            }}
-          }} 
-         }} 
+          }}
+         }}
         }}
         """
         variable_values = {
@@ -319,9 +319,9 @@ class Spacelift:
         newline = "\n"
         query_text = f"""
         query blueprint($id: ID!) {{
-         blueprint(id: $id) {{ 
+         blueprint(id: $id) {{
           {newline.join(query_fields)}
-         }} 
+         }}
         }}
         """
         variable_values = {
