@@ -61,6 +61,13 @@ async def webhook_endpoint(
                 detail=f"Invalid payload format: {str(e)}",
             )
 
+        if payload.run_updated.state != "FINISHED":
+            logger.info(
+                f"Skipping webhook payload with state: {payload.run_updated.state}"
+            )
+            return {
+                "message": "Webhook processed and skipped",
+            }
         stack_id = (
             payload.run_updated.stack.id
         )
