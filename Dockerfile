@@ -36,4 +36,4 @@ COPY . .
 RUN poetry install --only-root
 
 # Command to run the FastAPI application
-CMD ["uvicorn", "src.spacelift.app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "src.app.app:app", "--host", "0.0.0.0", "--port", "8000"]

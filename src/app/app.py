@@ -3,6 +3,9 @@ import logging
 import os
 import uuid
 
+from app.models.notification_policy import (
+    NotificationPolicy,
+)
 from fastapi import (
     FastAPI,
     HTTPException,
@@ -15,10 +18,6 @@ from temporal.workflows.stack_dependency_chain import (
     StackDependencyChainWorkflow,
 )
 from temporalio.client import Client
-
-from spacelift.models.notification_policy import (
-    NotificationPolicy,
-)
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
