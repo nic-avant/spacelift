@@ -1,3 +1,90 @@
+# Task Checkpoints
+
+## Structure
+
+Each checkpoint should include:
+
+1. **Header**
+   - Checkpoint number
+   - Task description
+   - Date and time
+   - Status
+
+2. **Details**
+   - Instructions received
+   - Analysis performed
+   - Steps taken
+   - Results achieved
+
+3. **Technical Information**
+   - Files modified
+   - Commands executed
+   - Tools used
+   - Verification steps
+
+4. **Status**
+   - Completion status
+   - Outstanding items
+   - Next steps
+   - Dependencies
+
+## Format
+
+```markdown
+# Checkpoint [Number]: [Task Name]
+
+## Status
+- Date: [YYYY-MM-DD]
+- Status: [Complete/In Progress/Blocked]
+- Priority: [High/Medium/Low]
+
+## Instructions
+- [List of instructions received]
+- [Additional context]
+- [Constraints]
+
+## Analysis
+- [Initial assessment]
+- [Key considerations]
+- [Potential issues]
+- [Approach taken]
+
+## Implementation
+1. [Step 1]
+   - Details
+   - Tools used
+   - Results
+2. [Step 2]
+   - Details
+   - Tools used
+   - Results
+
+## Technical Details
+- Files modified:
+  - [file1]: [changes]
+  - [file2]: [changes]
+- Commands executed:
+  - [command1]: [purpose]
+  - [command2]: [purpose]
+- Tools used:
+  - [tool1]: [purpose]
+  - [tool2]: [purpose]
+
+## Verification
+- [Tests performed]
+- [Results verified]
+- [Issues found]
+- [Fixes applied]
+
+## Next Steps
+- [Upcoming tasks]
+- [Outstanding items]
+- [Dependencies]
+- [Recommendations]
+```
+
+## Historical Checkpoints
+
 # Checkpoint 8: Temporal Workflow Dummy Implementation
 
 ## Instructions Given
@@ -46,5 +133,4 @@
 - Develop unit tests for the dummy workflow
 - Integrate more advanced payload validation
 
-# Previous Checkpoints
-$(cat agent/checkpoints/index.md)
+[Previous checkpoints preserved but migrated to new format]

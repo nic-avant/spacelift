@@ -1,29 +1,54 @@
-# Development Standards
+# Development Standards for Claude 3.5
 
-This directory contains the development standards and guidelines for the Infrastructure Change Handler project. These standards ensure consistency, maintainability, and quality across the codebase.
+This directory contains the development standards and guidelines optimized for Claude 3.5-sonnet's capabilities. These standards ensure consistent, high-quality code generation and maintenance.
+
+## Core Principles
+
+1. **Systematic Approach**
+   - Break down complex tasks into clear steps
+   - Verify each step before proceeding
+   - Maintain clear documentation of progress
+
+2. **Code Quality**
+   - Follow established coding standards
+   - Implement proper error handling
+   - Consider edge cases and failure modes
+   - Write self-documenting code
+
+3. **Documentation Quality**
+   - Maintain clear, concise documentation
+   - Update documentation with code changes
+   - Follow markdown formatting standards
+   - Use appropriate tags and properties
+
+4. **Tool Usage**
+   - Use appropriate tools for each task
+   - Verify tool operations success
+   - Handle errors gracefully
+   - Document tool usage patterns
 
 ## Standards Overview
 
 ### [Coding Standards](coding.md)
-Comprehensive coding and design principles including:
-- KISS (Keep It Simple, Stupid)
-- YAGNI (You Aren't Gonna Need It)
-- Do The Simplest Thing That Could Possibly Work
-- Separation of Concerns
-- DRY (Don't Repeat Yourself)
-- Avoiding Premature Optimization
-- Composition Over Inheritance
-- Inversion of Control
-- Open/Closed Principle
-- Interface Segregation Principle
-- Command Query Separation
+- SOLID Principles
+- Clean Code Practices
+- Error Handling Patterns
+- Testing Guidelines
+- Performance Considerations
 
 ### [Documentation Standards](documentation.md)
-Guidelines for documenting the codebase, emphasizing:
-- Clear communication of code purpose
-- Clarity and conciseness
-- Markdown formatting requirements
+- File Structure
+- Markdown Formatting
+- Tag Usage Rules
+- Update Procedures
 
 ## Compliance
 
-All contributions to the codebase must adhere to these standards. Please review the relevant documents before making changes or additions to the project.
+All code generation and modifications must adhere to these standards. Review relevant documents before making changes.
+
+## Verification
+
+- Verify changes meet all standards
+- Test modifications thoroughly
+- Update documentation accordingly
+- Confirm successful implementation

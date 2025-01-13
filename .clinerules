@@ -4,11 +4,11 @@
 - Do not write unit tests unless explicitly requested
 - Review `agent/standards/index.md` before starting any new task
 - Review `agent/design/index.md` before adding new constructs or features
-- Review `agent/defects/index.md` before making codebase changes
+- Review `agent/tracking/defects.md` before making codebase changes
 
 ## Documentation Rules
 - Record task progress by marking completed tasks with `[x]` in checkboxes
-- Document all changes in `agent/checkpoints/index.md` with:
+- Document all changes in `agent/tracking/checkpoints.md` with:
   - New information obtained
   - Instructions given
   - Changes made
