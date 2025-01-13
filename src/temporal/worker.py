@@ -8,20 +8,19 @@ from temporalio.worker import Worker
 
 # Pass the activities through the sandbox
 with workflow.unsafe.imports_passed_through():
-    from temporal.activities.get_dependent_stacks import (
-        get_dependent_stacks_activity,
+    from temporal.activities.stack_dependencies import (
+        fetch_dependent_stacks,
     )
-    from temporal.activities.run_stack import (
-        run_stack,
+    from temporal.activities.stack_operations import (
+        trigger_stack_run,
     )
-    from temporal.workflow.routing_workflow import (
-        DependentStacksWorkflow,
-        RunStackWorkflow
+    from temporal.workflows.stack_dependency_chain import (
+        StackDependencyChainWorkflow,
+        StackExecutionWorkflow
     )
 
 
 async def main():
-
     # Configure logging
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
@@ -38,10 +37,10 @@ async def main():
         client,
         task_queue="spacelift-task-queue",
         workflows=[
-            DependentStacksWorkflow,
-            RunStackWorkflow
+            StackDependencyChainWorkflow,
+            StackExecutionWorkflow
         ],
-        activities=[get_dependent_stacks_activity, run_stack]
+        activities=[fetch_dependent_stacks, trigger_stack_run]
     )
 
     try:

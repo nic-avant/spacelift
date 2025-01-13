@@ -25,22 +25,33 @@ This project uses Temporal for robust workflow management, specifically for hand
 
 ### Workflow Types in This Project
 
-1. **Dependent Stacks Workflow**
-   - Located in `src/temporal/workflow/routing_workflow.py`
-   - Manages the routing and execution of dependent Spacelift stacks
-   - Implemented in the `DependentStacksWorkflow` class
+1. **Stack Dependency Chain Workflow**
+   - Located in `src/temporal/workflows/stack_dependency_chain.py`
+   - Manages the discovery and execution of dependent Spacelift stacks
+   - Implemented in the `StackDependencyChainWorkflow` class
+   - Spawns `StackExecutionWorkflow` for each dependent stack
+
+2. **Stack Execution Workflow**
+   - Located in `src/temporal/workflows/stack_dependency_chain.py`
+   - Handles individual stack run execution
+   - Implemented in the `StackExecutionWorkflow` class
 
 ### Activities
 
-1. **Get Dependent Stacks Activity**
-   - Located in `src/temporal/activities/get_dependent_stacks.py`
+1. **Stack Dependencies Activity**
+   - Located in `src/temporal/activities/stack_dependencies.py`
    - Retrieves dependent stacks information
-   - Implemented in the `get_dependent_stacks_activity` function
+   - Implemented in the `fetch_dependent_stacks` function
+
+2. **Stack Operations Activity**
+   - Located in `src/temporal/activities/stack_operations.py`
+   - Handles stack run operations
+   - Implemented in the `trigger_stack_run` function
 
 ### Temporal Worker
 
-The Temporal worker is implemented in `src/temporal/temporal_worker.py`. It:
-- Registers the DependentStacksWorkflow and get_dependent_stacks_activity
+The Temporal worker is implemented in `src/temporal/worker.py`. It:
+- Registers both workflows and activities
 - Connects to the Temporal server using the configured TEMPORAL_URL
 - Processes tasks on the "spacelift-task-queue" task queue
 

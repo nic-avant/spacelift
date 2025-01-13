@@ -1,25 +1,25 @@
 from dataclasses import dataclass
 from temporalio import activity
 
-from src.spacelift.main import Spacelift
+from spacelift.main import Spacelift
 
 
 @dataclass
-class RunStackInput:
-    """Input for the run_stack activity."""
+class StackExecutionInput:
+    """Input parameters for triggering a stack run."""
     stack_id: str
 
 
 @activity.defn
-async def run_stack(input: RunStackInput) -> dict:
+async def trigger_stack_run(input: StackExecutionInput) -> dict:
     """
     Temporal activity to trigger a run on a Spacelift stack.
     
     Args:
-        input: RunStackInput containing the stack_id to run
+        input (StackExecutionInput): Contains the stack_id to trigger a run for.
         
     Returns:
-        dict: Information about the triggered run including id and branch
+        dict: Information about the triggered run including id, branch, and state.
     """
     spacelift = Spacelift()
     result = spacelift.trigger_run(

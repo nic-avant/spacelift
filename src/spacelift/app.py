@@ -8,11 +8,11 @@ from fastapi import (
     HTTPException,
     Request,
 )
-from temporal.activities.get_dependent_stacks import (
-    InputParams,
+from temporal.activities.stack_dependencies import (
+    StackDependencyInput,
 )
-from temporal.workflow.routing_workflow import (
-    DependentStacksWorkflow,
+from temporal.workflows.stack_dependency_chain import (
+    StackDependencyChainWorkflow,
 )
 from temporalio.client import Client
 
@@ -96,8 +96,8 @@ async def webhook_endpoint(
                 f"Starting workflow with ID: {wf_id}"
             )
             result = await client.start_workflow(
-                DependentStacksWorkflow.run,
-                InputParams(stack_id),
+                StackDependencyChainWorkflow.run,
+                StackDependencyInput(stack_id=stack_id),
                 id=wf_id,
                 task_queue="spacelift-task-queue",
             )

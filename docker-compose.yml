@@ -115,7 +115,7 @@ services:
       - SPACELIFT_BASE_URL=${SPACELIFT_BASE_URL}
       - SPACELIFT_KEY_ID=${SPACELIFT_KEY_ID}
       - SPACELIFT_KEY_SECRET=${SPACELIFT_KEY_SECRET}
-    command: python -m src.temporal.temporal_worker
+    command: python -m src.temporal.worker
 
 networks:
   temporal-network:

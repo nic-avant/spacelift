@@ -5,24 +5,25 @@ from temporalio import activity
 
 
 @dataclass
-class InputParams:
+class StackDependencyInput:
+    """Input parameters for fetching dependent stacks."""
     stack_id: str
 
 
 @activity.defn
-async def get_dependent_stacks_activity(
-    input: InputParams,
+async def fetch_dependent_stacks(
+    input: StackDependencyInput,
 ) -> list[dict]:
     """
     Temporal activity to retrieve dependent stacks for a given stack_id.
 
     Args:
-        stack_id (str): The ID of the stack to find dependencies for.
+        input (StackDependencyInput): Contains the stack_id to find dependencies for.
 
     Returns:
-        list[dict]: A list of dependent stacks.
+        list[dict]: A list of dependent stacks, each containing stack information
+                   including id, labels, and attached contexts.
     """
-
     sl = Spacelift()
     stacks = sl.get_stacks(
         query_fields=[

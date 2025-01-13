@@ -33,10 +33,11 @@
 
 - `src/temporal/`: Change workflow management
   - `activities/`: Infrastructure operations
-    - `get_dependent_stacks.py`: Dependency resolution
-  - `workflow/`: Change orchestration
-    - `routing_workflow.py`: Change propagation
-  - `temporal_worker.py`: Worker process
+    - `stack_dependencies.py`: Dependency resolution
+    - `stack_operations.py`: Stack execution operations
+  - `workflows/`: Change orchestration
+    - `stack_dependency_chain.py`: Dependency chain execution
+  - `worker.py`: Worker process
   - `temporal_test.py`: Workflow testing
 
 - `tests/`: Test suite
