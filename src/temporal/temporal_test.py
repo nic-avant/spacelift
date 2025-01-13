@@ -4,7 +4,6 @@ import os
 
 from temporalio.client import Client
 
-
 logger = logging.getLogger(__name__)
 
 

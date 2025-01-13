@@ -16,7 +16,7 @@ with workflow.unsafe.imports_passed_through():
     )
     from temporal.workflows.stack_dependency_chain import (
         StackDependencyChainWorkflow,
-        StackExecutionWorkflow
+        StackExecutionWorkflow,
     )
 
 

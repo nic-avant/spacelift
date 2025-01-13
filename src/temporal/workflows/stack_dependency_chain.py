@@ -2,7 +2,9 @@ from datetime import timedelta
 from typing import Dict, List
 
 from temporalio import workflow
-from temporalio.common import RetryPolicy
+from temporalio.common import (
+    RetryPolicy,
+)
 
 with workflow.unsafe.imports_passed_through():
     from temporal.activities.stack_dependencies import (
@@ -57,7 +59,7 @@ class StackDependencyChainWorkflow:
         for stack in dependent_stacks:
             stack_id = stack["id"]
             workflow.logger.info(f"Starting StackExecutionWorkflow for stack {stack_id}")
-            
+
             # Start the child workflow and await its completion
             handle = await workflow.start_child_workflow(
                 StackExecutionWorkflow,

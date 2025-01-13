@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from temporalio import activity
 
 from spacelift.main import Spacelift
+from temporalio import activity
 
 
 @dataclass

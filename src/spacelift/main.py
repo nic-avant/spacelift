@@ -457,7 +457,7 @@ def blueprint_test():
 def main():
     # Configure basic logging
     logging.basicConfig(level=logging.INFO)
-    
+
     # space_context_test()
     blueprint_test()
 
