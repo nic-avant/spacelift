@@ -42,11 +42,68 @@ Each decision should be documented using the following structure:
 
 ## Active Decisions
 
-[List of current active decisions with links]
+### Decision 001: Stack Dependency Management via Labels
+- **Date**: 2024-01-14
+- **Status**: Accepted
+- **Impact**: High
+
+#### Context
+Need a flexible way to define dependencies between Spacelift stacks that is:
+- Easy to maintain
+- Visible in stack configuration
+- Queryable via API
+- Doesn't require database storage
+
+#### Decision
+Use Spacelift stack labels in the format `dependsOn:stack-id` to declare dependencies.
+
+#### Consequences
+**Positive**:
+- Simple to implement and understand
+- Native to Spacelift's existing label system
+- Easy to query via GraphQL API
+- Self-documenting in stack configuration
+- No additional storage needed
+
+**Negative**:
+- Limited to direct dependencies (no complex conditions)
+- Manual label management required
+- No built-in cycle detection
+
+### Decision 002: Temporal for Workflow Orchestration
+- **Date**: 2024-01-14
+- **Status**: Accepted
+- **Impact**: High
+
+#### Context
+Need a reliable system to:
+- Handle long-running stack operations
+- Manage retries and failures
+- Scale with number of dependent stacks
+- Provide visibility into execution
+
+#### Decision
+Use Temporal for workflow orchestration with:
+- Parent workflow for dependency chain management
+- Child workflows for individual stack execution
+- Activities for API operations
+- Built-in retry policies
+
+#### Consequences
+**Positive**:
+- Reliable execution with automatic retries
+- Built-in state management
+- Good visibility through Web UI
+- Scalable worker architecture
+
+**Negative**:
+- Additional infrastructure requirements
+- Learning curve for Temporal concepts
+- Increased system complexity
 
 ## Deprecated Decisions
 
-[List of deprecated decisions with deprecation dates]
+No deprecated decisions yet.
 
 ## Decision Categories
 

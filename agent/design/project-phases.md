@@ -55,21 +55,26 @@ This project involves setting up a system to manage Spacelift stack execution us
 - FastAPI
 - Temporal
 
-### Phase 6: Configure Spacelift Labels
+### Phase 6: Implement Stack Dependency Management ✓
 **Features:**
-- [ ] Create labels in Spacelift to trigger the webhook
-- [ ] Configure the webhook URL in the Spacelift label settings
-- [ ] Test the labels to ensure they trigger the webhook correctly
+- [x] Design dependency label format (`dependsOn:stack-id`)
+- [x] Implement dependency discovery via Spacelift API
+- [x] Create stack dependency chain workflow
+- [x] Add child workflows for stack execution
+- [x] Implement retry policies and error handling
 
 **Technology:**
-- Spacelift
+- Temporal
+- Spacelift API
+- GraphQL
 
-### Phase 7: Test End-to-End Flow
+### Phase 7: End-to-End Testing ✓
 **Features:**
-- [ ] Trigger the webhook with a test Spacelift stack change
-- [ ] Process the payload and trigger the Temporal workflow
-- [ ] Manage the stack execution successfully with the Temporal workflow
-- [ ] Verify and document the entire flow
+- [x] Test webhook with stack completion events
+- [x] Verify dependency discovery logic
+- [x] Test workflow chain execution
+- [x] Validate stack run triggering
+- [x] Document complete workflow
 
 **Technology:**
 - FastAPI
@@ -107,16 +112,33 @@ This project involves setting up a system to manage Spacelift stack execution us
 
 ### Future Tasks and Improvements
 **Features:**
-- [ ] Implement advanced logging and monitoring for workflows
-- [ ] Add comprehensive unit and integration tests
-- [ ] Create a configuration management system for workflow parameters
-- [ ] Develop a notification system for workflow events
-- [ ] Implement retry mechanisms for failed stack executions
-- [ ] Add support for multiple Spacelift stack types and configurations
-- [ ] Create a dashboard or reporting mechanism for workflow executions
+- [ ] Enhanced Dependency Management
+  - [ ] Support conditional dependencies (e.g., only on successful runs)
+  - [ ] Add dependency priority levels
+  - [ ] Implement dependency cycle detection
+  - [ ] Support dependency groups/tags
+
+- [ ] Workflow Enhancements
+  - [ ] Add workflow cancellation support
+  - [ ] Implement stack run status monitoring
+  - [ ] Add manual approval steps for critical paths
+  - [ ] Create dependency visualization tools
+
+- [ ] Integration Features
+  - [ ] Add Slack/Teams notifications for workflow events
+  - [ ] Create audit/reporting tools for dependency chains
+  - [ ] Implement metrics collection for performance analysis
+  - [ ] Add support for other CI/CD platforms
+
+- [ ] System Controls
+  - [ ] Add rate limiting for stack runs
+  - [ ] Implement maintenance windows
+  - [ ] Create blackout periods for runs
+  - [ ] Add stack-specific retry policies
 
 **Technology:**
+- Temporal
+- GraphQL
 - Monitoring tools
-- Testing frameworks
-- Configuration management
 - Notification services
+- Visualization libraries

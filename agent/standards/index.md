@@ -35,12 +35,29 @@ This directory contains the development standards and guidelines optimized for C
 - Error Handling Patterns
 - Testing Guidelines
 - Performance Considerations
+- Stack Dependency Guidelines
+  - Use clear label naming (`dependsOn:stack-id`)
+  - Document dependencies in stack configs
+  - Avoid circular dependencies
+  - Consider chain length impact
 
 ### [Documentation Standards](documentation.md)
 - File Structure
 - Markdown Formatting
 - Tag Usage Rules
 - Update Procedures
+
+### [Workflow Standards](workflow.md)
+- Temporal Best Practices
+  - Keep workflows deterministic
+  - Use appropriate timeouts
+  - Implement proper error handling
+  - Follow retry policies
+- Activity Guidelines
+  - Handle API rate limits
+  - Implement idempotency
+  - Use consistent error types
+  - Log key events
 
 ## Compliance
 

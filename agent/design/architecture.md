@@ -7,22 +7,40 @@ This document outlines the high-level architecture of the system, focusing on ke
 ## Components
 
 1. **Core System**
-   - Main application logic
-   - Business rules
-   - Data models
-   - Service interfaces
+   - Spacelift API Client (`src/spacelift/`)
+     - GraphQL API wrapper
+     - Authentication handling
+     - Stack/Context/Space operations
+   - FastAPI Webhook Server (`src/app/`)
+     - Event payload validation
+     - Workflow triggering
+     - Error handling
+   - Temporal Workflows (`src/temporal/`)
+     - Dependency chain orchestration
+     - Stack execution management
+     - Activity coordination
 
 2. **External Integrations**
-   - Third-party services
-   - API connections
-   - Data exchange
-   - Authentication
+   - Spacelift.io
+     - GraphQL API integration
+     - Stack management
+     - Webhook event delivery
+   - Temporal Server
+     - Workflow execution
+     - State persistence
+     - Activity scheduling
+     - Error handling/retries
 
 3. **Infrastructure**
-   - Deployment configuration
-   - Scaling strategy
-   - Monitoring setup
-   - Security measures
+   - Docker Containers
+     - FastAPI application
+     - Temporal worker
+     - Temporal server
+     - PostgreSQL database
+   - Monitoring
+     - Temporal Web UI
+     - Application logging
+     - Stack execution tracking
 
 ## Design Principles
 
@@ -47,16 +65,19 @@ This document outlines the high-level architecture of the system, focusing on ke
 ## Technical Stack
 
 1. **Backend**
-   - Language: Python
-   - Framework: FastAPI
-   - Database: As needed
-   - Cache: As needed
+   - Language: Python 3.10+
+   - API Framework: FastAPI
+   - GraphQL Client: gql
+   - Workflow Engine: Temporal
+   - Data Validation: Pydantic
+   - Database: PostgreSQL (for Temporal)
 
 2. **Infrastructure**
-   - Container: Docker
-   - Orchestration: As needed
-   - CI/CD: As configured
-   - Monitoring: As needed
+   - Containerization: Docker & Docker Compose
+   - Workflow Orchestration: Temporal Server
+   - Process Management: Temporal Worker
+   - Monitoring: Temporal Web UI
+   - API Integration: Spacelift GraphQL API
 
 ## Security
 
