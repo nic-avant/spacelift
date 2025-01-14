@@ -1,13 +1,29 @@
 import json
 import os
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import (
+    AsyncMock,
+    MagicMock,
+    patch,
+)
 
 import pytest
-from fastapi.testclient import TestClient
+from app.app import app
+from app.models.notification_policy import (
+    Commit,
+    NotificationPolicy,
+    Run,
+    RuntimeConfig,
+    RunUpdated,
+    Space,
+    Stack,
+    Timing,
+    Urls,
+)
+from fastapi.testclient import (
+    TestClient,
+)
 from temporalio.client import Client
 
-from app.app import app
-from app.models.notification_policy import NotificationPolicy, RunUpdated, Run, Stack, Space, Commit, CreatorSession, RuntimeConfig, Urls, Timing
 
 @pytest.fixture
 def test_client():
