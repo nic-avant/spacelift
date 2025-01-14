@@ -6,7 +6,15 @@
 
 ## Project Temporal Integration
 
-This project uses Temporal for robust workflow management, specifically for handling Spacelift webhook events and stack execution workflows.
+This project uses Temporal to automate the execution of dependent Spacelift stacks. When a stack finishes running, the system automatically identifies and triggers runs for any stacks that depend on it. Dependencies are declared using Spacelift stack labels in the format `dependsOn:stack-id`.
+
+### Flow Overview
+1. A stack completes execution
+2. Webhook receives notification
+3. Temporal workflow is triggered
+4. System queries Spacelift for stacks with matching dependency labels
+5. Child workflows are spawned to trigger runs for dependent stacks
+6. Retries and error handling ensure reliable execution
 
 ### Key Temporal Concepts
 
@@ -27,26 +35,35 @@ This project uses Temporal for robust workflow management, specifically for hand
 
 1. **Stack Dependency Chain Workflow**
    - Located in `src/temporal/workflows/stack_dependency_chain.py`
-   - Manages the discovery and execution of dependent Spacelift stacks
-   - Implemented in the `StackDependencyChainWorkflow` class
-   - Spawns `StackExecutionWorkflow` for each dependent stack
+   - Primary workflow triggered by webhook notifications
+   - Discovers dependent stacks by querying Spacelift API for stacks with matching `dependsOn:stack-id` labels
+   - Implements retry policy with exponential backoff (1-60 seconds, max 3 attempts)
+   - Spawns child `StackExecutionWorkflow` for each dependent stack
+   - Returns results from all triggered stack runs
 
 2. **Stack Execution Workflow**
    - Located in `src/temporal/workflows/stack_dependency_chain.py`
-   - Handles individual stack run execution
-   - Implemented in the `StackExecutionWorkflow` class
+   - Child workflow responsible for triggering individual stack runs
+   - Uses Spacelift API to initiate stack execution
+   - Implements same retry policy as parent workflow
+   - Returns run information including ID, branch, and state
 
 ### Activities
 
 1. **Stack Dependencies Activity**
    - Located in `src/temporal/activities/stack_dependencies.py`
-   - Retrieves dependent stacks information
-   - Implemented in the `fetch_dependent_stacks` function
+   - Uses Spacelift API to query all stacks with their labels and attached contexts
+   - Filters stacks based on dependency labels (format: `dependsOn:stack-id`)
+   - Returns list of dependent stacks with their metadata
+   - Input: `StackDependencyInput` with stack_id to find dependencies for
+   - Output: List of stack objects containing ID, labels, and context information
 
 2. **Stack Operations Activity**
    - Located in `src/temporal/activities/stack_operations.py`
-   - Handles stack run operations
-   - Implemented in the `trigger_stack_run` function
+   - Interfaces with Spacelift API to trigger stack runs
+   - Input: `StackExecutionInput` containing stack_id to trigger
+   - Output: Run details including ID, branch, and state
+   - Handles API errors and provides meaningful error messages
 
 ### Temporal Worker
 
@@ -73,11 +90,30 @@ The project includes a test script (`src/temporal/temporal_test.py`) that:
 
 ## Best Practices
 
-1. Design workflows to be deterministic
-2. Keep activities idempotent
-3. Use appropriate error handling and retry mechanisms
-4. Implement comprehensive logging
-5. Secure sensitive information like API credentials
+1. Stack Dependencies
+   - Use clear, consistent naming for dependency labels (`dependsOn:stack-id`)
+   - Document dependencies in stack configurations
+   - Avoid circular dependencies between stacks
+   - Consider dependency chain length when designing stack relationships
+
+2. Workflow Design
+   - Keep workflows deterministic and idempotent
+   - Handle API rate limits in activities
+   - Use appropriate timeouts for API operations
+   - Implement comprehensive error handling with retries
+   - Log key events and state transitions
+
+3. Security
+   - Secure Spacelift API credentials using environment variables
+   - Validate webhook payloads
+   - Monitor workflow access patterns
+   - Implement appropriate access controls
+
+4. Monitoring
+   - Track dependency chain execution times
+   - Monitor for failed or stuck workflows
+   - Set up alerts for workflow failures
+   - Keep audit logs of triggered stack runs
 
 ## Monitoring and Observability
 
@@ -87,11 +123,31 @@ The project includes a test script (`src/temporal/temporal_test.py`) that:
 
 ## Extending the Workflow
 
-The current implementation can be extended by:
-- Adding new event types
-- Implementing custom signal methods
-- Integrating with additional external systems
-- Enhancing error handling and notification mechanisms
+The dependency management system can be extended in several ways:
+
+1. Enhanced Dependency Rules
+   - Add support for conditional dependencies (e.g., only trigger on successful runs)
+   - Implement dependency priority levels to control execution order
+   - Support dependency groups or tags for batch processing
+   - Add dependency validation rules to prevent circular dependencies
+
+2. Advanced Workflow Features
+   - Add workflow cancellation support for stopping dependency chains
+   - Implement stack run status monitoring with timeout handling
+   - Add support for manual approval steps in critical paths
+   - Create dependency visualization tools for stack relationships
+
+3. Integration Enhancements
+   - Add support for other CI/CD platforms beyond Spacelift
+   - Implement notification systems (Slack, Email, etc.) for run status
+   - Create audit/reporting tools for dependency chain analysis
+   - Add metrics collection for performance analytics
+
+4. Custom Controls
+   - Add rate limiting for stack runs to prevent system overload
+   - Implement maintenance windows for controlled execution
+   - Create blackout periods to prevent runs during sensitive times
+   - Add stack-specific retry policies based on failure patterns
 
 ## References
 

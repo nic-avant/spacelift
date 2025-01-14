@@ -1,6 +1,14 @@
 # Spacelift Client and Workflow Manager
 
-This project provides a simple client library for working with the [spacelift.io](https://spacelift.io) API, as well as a webhook and workflow management system for Spacelift stack execution.
+This project provides a simple client library for working with the [spacelift.io](https://spacelift.io) API, along with an automated dependency management system for Spacelift stacks. It enables automatic triggering of dependent stacks when their dependencies complete execution.
+
+## Core Problem Solved
+
+This project solves the challenge of managing dependencies between Spacelift stacks by:
+1. Allowing stacks to declare dependencies using labels (e.g., `dependsOn:stack-id`)
+2. Automatically detecting when a stack finishes execution via webhooks
+3. Finding and triggering runs for all dependent stacks using Temporal workflows
+4. Providing reliable execution with retries and error handling
 
 ## Project Design
 
