@@ -23,6 +23,15 @@ app = FastAPI()
 logger = logging.getLogger(__name__)
 
 
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint that returns 200 OK when the service is healthy
+    """
+    return {"status": "healthy"}
+
+
+
 @app.post("/webhook")
 async def webhook_endpoint(
     request: Request,

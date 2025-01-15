@@ -146,3 +146,10 @@ async def test_webhook_general_error(test_client):
     response = test_client.post("/webhook", json=None)
     assert response.status_code == 500
     assert response.json()["detail"] is not None
+
+
+def test_health_check(test_client):
+    """Test health check endpoint returns 200 OK and healthy status"""
+    response = test_client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "healthy"}
