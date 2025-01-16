@@ -1,4 +1,0 @@
-gql[requests]
-fastapi==0.95.0
-uvicorn==0.21.0
-temporalio==1.1.0
